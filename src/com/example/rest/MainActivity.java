@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
 	private int START = 0;
@@ -26,8 +27,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		
 		Button installTimer = (Button) findViewById(R.id.set);
 		OUTPUT = (TextView) findViewById(R.id.textView1);
-		Button start = (Button) findViewById(R.id.button2);
-		Button stop = (Button) findViewById(R.id.button1);
 		
 		SET_START = (EditText) findViewById(R.id.start);
 		SET_END = (EditText) findViewById(R.id.end);
@@ -35,8 +34,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		
 		
 		installTimer.setOnClickListener(this);
-		start.setOnClickListener(this);
-		stop.setOnClickListener(this);
 	}
 
 	@Override
@@ -51,17 +48,19 @@ public class MainActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		switch(v.getId()) {
 			case R.id.set:
-				START = Integer.valueOf(SET_START.getText().toString());
-				END = Integer.valueOf(SET_END.getText().toString());
-				PERIODIC = Integer.valueOf(SET_PERIODIC.getText().toString());
-				String out = String.valueOf(START+" "+END+" "+PERIODIC);
-				OUTPUT.setText(out);
-				break;
-			case R.id.button2:
+				String stringStart = SET_START.getText().toString();
+				String stringEnd = SET_END.getText().toString();
+				String stringPeriodic = SET_PERIODIC.getText().toString();
+				if (stringStart.length() == 0 || stringEnd.length() == 0 || stringPeriodic.length() == 0) {
+					Toast.makeText(this, "Всё поля должны быть заполнены", Toast.LENGTH_SHORT).show();
+				} else {
+				END = Integer.valueOf(stringStart);
+				PERIODIC = Integer.valueOf(stringEnd);
+				String out = String.valueOf(stringPeriodic);
 				startService(new Intent(this, MyService.class));
+				OUTPUT.setText(out);
+				}
 				break;
-			case R.id.button1:
-				stopService(new Intent(this, MyService.class));
 		}
 	}
 
