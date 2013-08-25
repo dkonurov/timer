@@ -7,6 +7,7 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:allowBackup="true"
@@ -23,11 +24,12 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name="com.example.rest.MyService"
+        <receiver
+            android:name="com.example.rest.MyReceiver"
             android:enabled="true"
-            android:exported="false" >
-        </service>
+            android:exported="true" >
+        </receiver>
+        <service android:name="TimerService"></service>
     </application>
 
 </manifest>

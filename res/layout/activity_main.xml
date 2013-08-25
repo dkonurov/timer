@@ -14,10 +14,10 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/end"
         android:layout_below="@+id/end"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="35dp"
         android:ems="10"
-        android:inputType="number" />
-
+        android:inputType="number|numberSigned|numberDecimal" />
+    
     <Button
         android:id="@+id/set"
         android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/start"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="35dp"
         android:ems="10"
         android:inputType="number" />
 
@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/end"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="35dp"
         android:ems="10"
         android:inputType="number" >
 
@@ -58,22 +58,31 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="22dp" />
 
-    <Button
-        android:id="@+id/button1"
+    <TextView
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/textView1"
-        android:layout_marginRight="16dp"
-        android:text="Button" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:text="@string/start" />
 
-    <Button
-        android:id="@+id/button2"
+    <TextView
+        android:id="@+id/TextView02"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/textView1"
-        android:layout_marginLeft="26dp"
-        android:text="Button" />
+        android:layout_below="@+id/end"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:text="@string/periodic" />
+
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_below="@+id/start"
+        android:layout_marginTop="18dp"
+        android:text="@string/end" />
 
 </RelativeLayout>

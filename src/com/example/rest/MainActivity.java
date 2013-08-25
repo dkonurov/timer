@@ -1,39 +1,41 @@
 package com.example.rest;
 
-import android.os.Bundle;
 import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
-	private int START = 0;
-	private int END = 0;
-	private int PERIODIC = 0;
-	private TextView OUTPUT;
-	private EditText SET_START;
-	private EditText SET_END;
-	private EditText SET_PERIODIC;
+	private int check = 0;
+	
+	private EditText setStart;
+	private EditText setEnd;
+	private EditText setPeriodic;
+	
+	private Button installTimer;
+	
+	 private AlarmManagerBroadcastReceiver alarm;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		Button installTimer = (Button) findViewById(R.id.set);
-		OUTPUT = (TextView) findViewById(R.id.textView1);
+		installTimer = (Button) findViewById(R.id.set);
 		
-		SET_START = (EditText) findViewById(R.id.start);
-		SET_END = (EditText) findViewById(R.id.end);
-		SET_PERIODIC = (EditText) findViewById(R.id.periodic);
-		
+		setStart = (EditText) findViewById(R.id.start);
+		setEnd = (EditText) findViewById(R.id.end);
+		setPeriodic = (EditText) findViewById(R.id.periodic);
 		
 		installTimer.setOnClickListener(this);
+		
+		alarm = new AlarmManagerBroadcastReceiver();
 	}
 
 	@Override
@@ -48,19 +50,33 @@ public class MainActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		switch(v.getId()) {
 			case R.id.set:
-				String stringStart = SET_START.getText().toString();
-				String stringEnd = SET_END.getText().toString();
-				String stringPeriodic = SET_PERIODIC.getText().toString();
-				if (stringStart.length() == 0 || stringEnd.length() == 0 || stringPeriodic.length() == 0) {
-					Toast.makeText(this, "Всё поля должны быть заполнены", Toast.LENGTH_SHORT).show();
+				InputMethodManager imm = (InputMethodManager)getSystemService(
+					      Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(setPeriodic.getWindowToken(), 0);
+					imm.hideSoftInputFromWindow(setStart.getWindowToken(), 0);
+					imm.hideSoftInputFromWindow(setEnd.getWindowToken(), 0);
+				if (check == 0) {
+					String stringStart = setStart.getText().toString();
+					String stringEnd = setEnd.getText().toString();
+					String stringPeriodic = setPeriodic.getText().toString();
+					if (stringStart.length() == 0 || stringEnd.length() == 0 || stringPeriodic.length() == 0) {
+						Toast.makeText(this, "Всё поля должны быть заполнены", Toast.LENGTH_SHORT).show();
+					} else {
+					int startInt = Integer.valueOf(stringStart);
+					int endInt = Integer.valueOf(stringEnd);
+					int periodicInt = Integer.valueOf(stringPeriodic);
+					installTimer.setText("Остановить таймер");
+					Context context = this.getApplicationContext();
+				    alarm.SetAlarm(context, startInt, endInt, periodicInt);
+				    check =1;
+					}
 				} else {
-				END = Integer.valueOf(stringStart);
-				PERIODIC = Integer.valueOf(stringEnd);
-				String out = String.valueOf(stringPeriodic);
-				startService(new Intent(this, MyService.class));
-				OUTPUT.setText(out);
+					Context context = this.getApplicationContext();
+				    alarm.CancelAlarm(context);
+				    installTimer.setText("Установить таймер");
+				    check = 0;
 				}
-				break;
+				
 		}
 	}
 
