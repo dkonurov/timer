@@ -2,6 +2,8 @@ package com.example.rest;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -20,7 +22,11 @@ public class MainActivity extends Activity implements OnClickListener {
 	
 	private Button installTimer;
 	
-	 private AlarmManagerBroadcastReceiver alarm;
+	private AlarmManagerBroadcastReceiver alarm;
+	
+	private SharedPreferences sPref;
+	
+	private String SAVED_TEXT = "saved check";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +40,11 @@ public class MainActivity extends Activity implements OnClickListener {
 		setPeriodic = (EditText) findViewById(R.id.periodic);
 		
 		installTimer.setOnClickListener(this);
+		
+		loadCheck();
+		if (check == 1) {
+			installTimer.setText("Остановить таймер");
+		}
 		
 		alarm = new AlarmManagerBroadcastReceiver();
 	}
@@ -79,5 +90,26 @@ public class MainActivity extends Activity implements OnClickListener {
 				
 		}
 	}
-
+	
+	public void finish() {
+		saveCheck();
+	}
+	 void saveCheck() {
+		    sPref = getPreferences(MODE_PRIVATE);
+		    Editor ed = sPref.edit();
+		    String savedText = String.valueOf(check);
+		    ed.putString(SAVED_TEXT, savedText);
+		    ed.commit();
+		    Toast.makeText(this, "Text saved", Toast.LENGTH_SHORT).show();
+		  }
+		  
+		  void loadCheck() {
+		    sPref = getPreferences(MODE_PRIVATE);
+		    String savedText = sPref.getString(SAVED_TEXT, "");
+		    if (savedText.length() == 0) {
+		    	savedText = "0";
+		    }
+		    check = Integer.valueOf(savedText);
+		    Toast.makeText(this, "Text loaded", Toast.LENGTH_SHORT).show();
+		  }
 }
