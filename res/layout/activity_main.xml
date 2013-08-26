@@ -8,48 +8,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <EditText
-        android:id="@+id/periodic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/end"
-        android:layout_below="@+id/end"
-        android:layout_marginTop="35dp"
-        android:ems="10"
-        android:inputType="number|numberSigned|numberDecimal" />
-    
-    <Button
-        android:id="@+id/set"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/periodic"
-        android:layout_alignRight="@+id/periodic"
-        android:layout_below="@+id/periodic"
-        android:layout_marginTop="22dp"
-        android:text="@string/set" />
-
-    <EditText
-        android:id="@+id/end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/start"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp"
-        android:ems="10"
-        android:inputType="number" />
-
-    <EditText
-        android:id="@+id/start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/end"
-        android:layout_marginTop="35dp"
-        android:ems="10"
-        android:inputType="number" >
-
-        <requestFocus />
-    </EditText>
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
@@ -68,21 +26,114 @@
         android:text="@string/start" />
 
     <TextView
-        android:id="@+id/TextView02"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/end"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="18dp"
-        android:text="@string/periodic" />
-
-    <TextView
         android:id="@+id/TextView01"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView2"
-        android:layout_below="@+id/start"
+        android:layout_below="@+id/startHours"
         android:layout_marginTop="18dp"
         android:text="@string/end" />
+
+    <EditText
+        android:id="@+id/startHours"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/endHours"
+        android:layout_below="@+id/textView2"
+        android:ems="10"
+        android:inputType="number" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/dotsStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/startHours"
+        android:layout_alignBottom="@+id/startHours"
+        android:layout_centerHorizontal="true"
+        android:text="@string/dots" />
+
+    <EditText
+        android:id="@+id/startMinute"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView2"
+        android:layout_toRightOf="@+id/textView1"
+        android:ems="10"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/endHours"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TextView01"
+        android:layout_marginTop="15dp"
+        android:layout_toLeftOf="@+id/textView1"
+        android:ems="10"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/endMinute"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/endHours"
+        android:layout_alignBottom="@+id/endHours"
+        android:layout_toRightOf="@+id/dotsEnd"
+        android:ems="10"
+        android:inputType="number" />
+
+    <TextView
+        android:id="@+id/TextView02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/endHours"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="@string/periodic" />
+
+    <Button
+        android:id="@+id/set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/periodicMinute"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="34dp"
+        android:text="@string/set" />
+
+    <EditText
+        android:id="@+id/periodicHours"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TextView02"
+        android:layout_toLeftOf="@+id/dotsPeriodic"
+        android:ems="10"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/periodicMinute"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TextView02"
+        android:layout_toRightOf="@+id/dotsPeriodic"
+        android:ems="10"
+        android:inputType="number" />
+
+    <TextView
+        android:id="@+id/dotsEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/dotsStart"
+        android:layout_alignTop="@+id/endMinute"
+        android:text="@string/dots" />
+
+    <TextView
+        android:id="@+id/dotsPeriodic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/dotsEnd"
+        android:layout_centerVertical="true"
+        android:text="@string/dots" />
 
 </RelativeLayout>

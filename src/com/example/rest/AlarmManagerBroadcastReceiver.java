@@ -10,7 +10,7 @@ import android.content.Intent;
 public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
  
  
- public void SetAlarm(Context context, int start, int end, int periodic)
+ public void SetAlarm(Context context, int startHours, int startMinute, int endHours, int endMinute, int periodicHours, int periodicMinute)
     {
         AlarmManager startAm=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         AlarmManager endAm =(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
@@ -20,22 +20,11 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
         Calendar calendarStart = Calendar.getInstance();
         Calendar calendarEnd = Calendar.getInstance();
         
-        int hoursEnd = 0;
-        int hoursStart = calendarStart.get(Calendar.HOUR_OF_DAY);
-        
-        if(calendarStart.get(Calendar.MINUTE) >= start) {
-        	hoursStart +=1;
-        }
-        if(start < end) {
-        	hoursEnd = hoursStart;
-        } else {
-        	hoursEnd = hoursStart+1;
-        }
-        calendarStart.set(Calendar.MINUTE, start);
-        calendarStart.set(Calendar.HOUR_OF_DAY, hoursStart);
+        calendarStart.set(Calendar.MINUTE, startMinute);
+        calendarStart.set(Calendar.HOUR_OF_DAY, startHours);
         	
-        calendarEnd.set(Calendar.MINUTE, end);
-        calendarEnd.set(Calendar.HOUR_OF_DAY, hoursEnd);
+        calendarEnd.set(Calendar.MINUTE, endMinute);
+        calendarEnd.set(Calendar.HOUR_OF_DAY, endHours);
         	
         calendarStart.set(Calendar.SECOND, 0);
         calendarEnd.set(Calendar.SECOND, 0);
@@ -43,6 +32,7 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
         PendingIntent piStart = PendingIntent.getService(context, 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent piEnd = PendingIntent.getService(context, 1, intent,PendingIntent.FLAG_UPDATE_CURRENT);
         
+        int periodic = periodicHours*60 + periodicMinute;
         startAm.setRepeating(AlarmManager.RTC_WAKEUP, calendarStart.getTimeInMillis(), 1000 * 60 * periodic , piStart);
         endAm.setRepeating(AlarmManager.RTC_WAKEUP, calendarEnd.getTimeInMillis(), 1000 * 60 *  periodic , piEnd);
    }

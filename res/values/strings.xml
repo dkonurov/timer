@@ -5,8 +5,9 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="set">Установить таймер</string>
-    <string name="start">Начало отдыха (мин.)</string>
-    <string name="end">Конец отдыха (мин.)</string>
-    <string name="periodic">Через сколько следующий отдых (мин.)</string>
+    <string name="start">Начало отдыха</string>
+    <string name="end">Конец отдыха</string>
+    <string name="periodic">Через сколько следующий отдых</string>
+    <string name="dots">:</string>
 
 </resources>
