@@ -31,7 +31,7 @@ public class TimerService extends Service {
 		
 		public void someTask() {
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-			//first 0 it's now and vibrate, sleep, vibrate,sleep,..
+			//first 0 it's now and next vibrate, sleep, vibrate,sleep,..
 			long[] pattern = {0, 500, 100, 500, 100, 500, 100, 500, 100, 500}; 
 			v.vibrate(pattern, -1);
 		}

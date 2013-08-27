@@ -2,11 +2,13 @@ package com.example.rest;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
@@ -17,19 +19,16 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
 	private int check = 0;
-	
-	private EditText setStartHours;
-	private EditText setStartMinute;
-	private EditText setEndHours;
-	private EditText setEndMinute;
-	private EditText setPeriodicHours;
-	private EditText setPeriodicMinute;
+
+	private EditText[] timer = new EditText[6];
 	
 	private Button installTimer;
 	
 	private AlarmManagerBroadcastReceiver alarm;
 	
 	private SharedPreferences sPref;
+	
+	private int counter=0;
 	
 	private String SAVED_TEXT = "saved check";
 
@@ -39,110 +38,40 @@ public class MainActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_main);
 		
 		installTimer = (Button) findViewById(R.id.set);
+
 		
-		setStartHours = (EditText) findViewById(R.id.startHours);
-		setStartMinute = (EditText) findViewById(R.id.startMinute);
-		setEndHours = (EditText) findViewById(R.id.endHours);
-		setEndMinute = (EditText) findViewById(R.id.endMinute);
-		setPeriodicHours = (EditText) findViewById(R.id.periodicHours);
-		setPeriodicMinute = (EditText) findViewById(R.id.periodicMinute);
+		timer[0] = (EditText) findViewById(R.id.startHours);
+		timer[1] = (EditText) findViewById(R.id.startMinute);
+		timer[2] = (EditText) findViewById(R.id.endHours);
+		timer[3] = (EditText) findViewById(R.id.endMinute);
+		timer[4] = (EditText) findViewById(R.id.periodicHours);
+		timer[5] = (EditText) findViewById(R.id.periodicMinute);
 		
-		setStartHours.setOnKeyListener (new OnKeyListener(){
-			@Override
-			public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
-				String stringOfHours = setStartHours.getText().toString();
-				if (stringOfHours.length() != 0) {	
-					int hours = Integer.valueOf(stringOfHours);
-					if (hours >24) {
-						errorTime(arg0, setStartHours);
-					} else if(setStartHours.getText().length() == 2) {
-						setStartMinute.requestFocus();
+		
+		for (counter=0; counter<=5; counter++) {
+			final int constN = counter;
+			timer[constN].setOnKeyListener (new OnKeyListener(){
+				@Override
+				public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
+					if (arg2.getAction() == KeyEvent.ACTION_UP){
+						if (constN!= 5) {
+							if(timer[constN].getText().length() == 2) {
+								timer[constN+1].requestFocus();
+							}
+						} else {
+							if(timer[constN].getText().length() == 2) {
+								installTimer.requestFocus();
+							}
+						}
 					}
+					return false;
 				}
-				return false;
-			}
-		});
-		setStartMinute.setOnKeyListener (new OnKeyListener(){
-			@Override
-			public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
-				String stringOfMinute = setStartMinute.getText().toString();
-				if (stringOfMinute.length() != 0) {
-					int minute = Integer.valueOf(stringOfMinute);
-					if (minute > 60) {
-						errorTime(arg0, setStartMinute);
-					} else if(setStartMinute.getText().length() == 2) {
-						setEndHours.requestFocus();
-					}
-				}
-				return false;
-			}
-		});
-		setEndHours.setOnKeyListener (new OnKeyListener(){
-			@Override
-			public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
-				String stringOfHours = setEndHours.getText().toString();
-				if (stringOfHours.length() != 0) {
-					int hour = Integer.valueOf(stringOfHours);
-					if (hour > 24) {
-						errorTime(arg0,setEndHours);
-					} else if(setEndHours.getText().length() == 2) {
-						setEndMinute.requestFocus();
-					}
-				}
-				return false;
-			}
-		});
-		setEndMinute.setOnKeyListener (new OnKeyListener(){
-			@Override
-			public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
-				String stringOfMinute = setEndMinute.getText().toString();
-				if (stringOfMinute.length() != 0) {
-				int minute = Integer.valueOf(stringOfMinute);
-					if (minute >60) {
-						errorTime(arg0, setEndMinute);
-					} else if(setEndMinute.getText().length() == 2) {
-						setPeriodicHours.requestFocus();
-					}
-				}
-				return false;
-			}
-		});
-		setPeriodicHours.setOnKeyListener (new OnKeyListener(){
-			@Override
-			public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
-				String stringOfHours = setPeriodicHours.getText().toString();
-				if (stringOfHours.length() != 0) {
-					int hour = Integer.valueOf(stringOfHours);
-					if (hour > 24) {
-						errorTime(arg0, setPeriodicHours);
-					} else if(setPeriodicHours.getText().length() == 2) {
-						setPeriodicMinute.requestFocus();
-					}
-				}
-				return false;
-			}
-		});
-		setPeriodicMinute.setOnKeyListener (new OnKeyListener(){
-			@Override
-			public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
-				String stringOfMinute = setPeriodicMinute.getText().toString();
-				if (stringOfMinute.length() != 0) {
-					int minute = Integer.valueOf(stringOfMinute);
-					if (minute > 60) {
-						errorTime(arg0, setPeriodicMinute);
-					} else if(setPeriodicMinute.getText().length() == 2) {
-						installTimer.requestFocus();
-					}
-				}
-				return false;
-			}
-		});
+			});
+		}
+
 		installTimer.setOnClickListener(this);
 		
 		loadCheck();
-		if (check == 1) {
-			installTimer.setText("Остановить таймер");
-		}
 		
 		alarm = new AlarmManagerBroadcastReceiver();
 	}
@@ -151,7 +80,18 @@ public class MainActivity extends Activity implements OnClickListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+			case R.id.menu_help:
+			Intent Help = new Intent(MainActivity.this, Help.class);
+			startActivity(Help);
+		}
+	
+		return super.onOptionsItemSelected(item);
+		
 	}
 
 	@Override
@@ -161,37 +101,41 @@ public class MainActivity extends Activity implements OnClickListener {
 			case R.id.set:
 				InputMethodManager imm = (InputMethodManager)getSystemService(
 					      Context.INPUT_METHOD_SERVICE);
-					imm.hideSoftInputFromWindow(setStartHours.getWindowToken(), 0);
-					imm.hideSoftInputFromWindow(setStartMinute.getWindowToken(), 0);
-					imm.hideSoftInputFromWindow(setEndHours.getWindowToken(), 0);
-					imm.hideSoftInputFromWindow(setEndMinute.getWindowToken(), 0);
-					imm.hideSoftInputFromWindow(setPeriodicHours.getWindowToken(), 0);
-					imm.hideSoftInputFromWindow(setPeriodicMinute.getWindowToken(), 0);
+					for (int i=0; i<=5;i++) {
+						imm.hideSoftInputFromWindow(timer[i].getWindowToken(), 0);
+					}
 					
 				if (check == 0) {
-					String stringStartHours = setStartHours.getText().toString();
-					String stringStartMinute = setStartMinute.getText().toString();
-					String stringEndHours = setEndHours.getText().toString();
-					String stringEndMinute = setEndMinute.getText().toString();
-					String stringPeriodicHours = setPeriodicHours.getText().toString();
-					String stringPeriodicMinute = setPeriodicMinute.getText().toString();
-					if (stringStartHours.length() == 0 || stringStartMinute.length() == 0 
-							|| stringEndHours.length() == 0 || stringEndMinute.length() == 0
-							|| stringPeriodicHours.length() == 0 || stringPeriodicMinute.length() == 0) {
-						Toast.makeText(this, "Всё поля должны быть заполнены", Toast.LENGTH_SHORT).show();
-					} else {
-					int startHoursInt = Integer.valueOf(stringStartHours);
-					int startMinuteInt = Integer.valueOf(stringStartMinute);
-					int endHoursInt = Integer.valueOf(stringEndHours);
-					int endMinuteInt = Integer.valueOf(stringEndMinute);
-					int periodicHoursInt = Integer.valueOf(stringPeriodicHours);
-					int periodicMinuteInt = Integer.valueOf(stringPeriodicMinute);
+					String[] stringTimer = new String[6];
+					int[] intTimer = new int[6];
+					for (int i=0;i<=5;i++) {
+						stringTimer[i] = timer[i].getText().toString();
+						if (stringTimer[i].length() == 0) {
+							Toast.makeText(this, "все поля должны быть заполнены", Toast.LENGTH_SHORT).show();
+						} else {
+							intTimer[i] = Integer.valueOf(stringTimer[i]);
+							if (i%2 == 0) {
+								if (intTimer[i] > 23) {
+									Toast.makeText(this, "Не правильное время", Toast.LENGTH_SHORT).show();
+									timer[i].setText("");
+									timer[i].requestFocus();
+									return;
+								}
+							} else {
+								if (intTimer[i] > 60) {
+									Toast.makeText(this, "не правильное время", Toast.LENGTH_SHORT).show();
+									timer[i].setText("");
+									timer[i].requestFocus();
+									return;
+								}
+							}
+						}
+					}
 					installTimer.setText("Остановить таймер");
 					Context context = this.getApplicationContext();
-				    alarm.SetAlarm(context, startHoursInt, startMinuteInt, endHoursInt, endMinuteInt, periodicHoursInt, periodicMinuteInt);
+				    alarm.SetAlarm(context, intTimer[0], intTimer[1], intTimer[2], intTimer[3], intTimer[4], intTimer[5]);
 				    check =1;
 				    saveCheck();
-					}
 				} else {
 					Context context = this.getApplicationContext();
 				    alarm.CancelAlarm(context);
@@ -206,15 +150,15 @@ public class MainActivity extends Activity implements OnClickListener {
 	 void saveCheck() {
 		    sPref = getPreferences(MODE_PRIVATE);
 		    Editor ed = sPref.edit();
-		    String stringStartHours = setStartHours.getText().toString();
-			String stringStartMinute = setStartMinute.getText().toString();
-			String stringEndHours = setEndHours.getText().toString();
-			String stringEndMinute = setEndMinute.getText().toString();
-			String stringPeriodicHours = setPeriodicHours.getText().toString();
-			String stringPeriodicMinute = setPeriodicMinute.getText().toString();
-		    String savedText = String.valueOf(check+","+stringStartHours+","+stringStartMinute+","
-		    		+stringEndHours+","+stringEndMinute+","
-		    		+stringPeriodicHours+","+stringPeriodicMinute);
+		    String[] stringTimer = new String[6]; 
+		    for (int i=0;i<=5;i++) {
+		    	stringTimer[i] = timer[i].getText().toString();
+		    }
+		    String savedText = String.valueOf(check);
+		    for (int i=0;i<=5;i++) {
+		    	savedText += ",";
+		    	savedText += stringTimer[i];
+		    }
 		    ed.putString(SAVED_TEXT, savedText);
 		    ed.commit();
 		  }
@@ -228,13 +172,11 @@ public class MainActivity extends Activity implements OnClickListener {
 		    String[] avaliable = savedText.split(",");
 		    check = Integer.valueOf(avaliable[0]);
 		    if (check == 1) {
-		    	setStartHours.setText(avaliable[1]);
-			    setStartMinute.setText(avaliable[2]);
-			    setEndHours.setText(avaliable[3]);
-			    setEndMinute.setText(avaliable[4]);
-			    setPeriodicHours.setText(avaliable[5]);
-			    setPeriodicMinute.setText(avaliable[6]);
+		    	for (int i=1; i<=6; i++) {
+		    		timer[i-1].setText(avaliable[i]);
 		    	}
+		    	installTimer.setText("Остановить таймер");
+		    }
 		    }
 		    
 		  }

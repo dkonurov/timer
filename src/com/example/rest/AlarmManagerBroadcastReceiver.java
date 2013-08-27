@@ -9,7 +9,6 @@ import android.content.Intent;
  
 public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
  
- 
  public void SetAlarm(Context context, int startHours, int startMinute, int endHours, int endMinute, int periodicHours, int periodicMinute)
     {
         AlarmManager startAm=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
@@ -32,7 +31,13 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
         PendingIntent piStart = PendingIntent.getService(context, 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent piEnd = PendingIntent.getService(context, 1, intent,PendingIntent.FLAG_UPDATE_CURRENT);
         
-        int periodic = periodicHours*60 + periodicMinute;
+        int differenceHours = endHours - startHours;
+        if (startHours>endHours) {
+        	differenceHours = endHours+24-startHours;
+        }
+        
+        int difference = differenceHours*60 + endMinute - startMinute;
+        int periodic = periodicHours*60 + periodicMinute + difference;
         startAm.setRepeating(AlarmManager.RTC_WAKEUP, calendarStart.getTimeInMillis(), 1000 * 60 * periodic , piStart);
         endAm.setRepeating(AlarmManager.RTC_WAKEUP, calendarEnd.getTimeInMillis(), 1000 * 60 *  periodic , piEnd);
    }
