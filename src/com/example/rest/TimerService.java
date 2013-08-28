@@ -9,7 +9,7 @@ import android.os.Vibrator;
 public class TimerService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-	        someTask();
+		vibration();
 	    return Service.START_NOT_STICKY;    
 	    }
 
@@ -29,7 +29,7 @@ public class TimerService extends Service {
 			return null;
 		}
 		
-		public void someTask() {
+		public void vibration() {
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 			//first 0 it's now and next vibrate, sleep, vibrate,sleep,..
 			long[] pattern = {0, 500, 100, 500, 100, 500, 100, 500, 100, 500}; 

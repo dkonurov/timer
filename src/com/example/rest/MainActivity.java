@@ -1,24 +1,30 @@
 package com.example.rest;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
+import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
+import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
-	private int check = 0;
+
+	protected String LOG_TAG = "MyLog";
 
 	private EditText[] timer = new EditText[6];
 	
@@ -28,7 +34,13 @@ public class MainActivity extends Activity implements OnClickListener {
 	
 	private SharedPreferences sPref;
 	
-	private int counter=0;
+	private int count = 0;
+	private static int START_TIME = 0;
+	private static int END_TIME = 2;
+	private static int PERIODIC_TIME = 4;
+	private int check = 0;
+	private int myHour = 0;
+	private int myMinute = 0;
 	
 	private String SAVED_TEXT = "saved check";
 
@@ -46,32 +58,35 @@ public class MainActivity extends Activity implements OnClickListener {
 		timer[3] = (EditText) findViewById(R.id.endMinute);
 		timer[4] = (EditText) findViewById(R.id.periodicHours);
 		timer[5] = (EditText) findViewById(R.id.periodicMinute);
+
+		installTimer.setOnClickListener(this);
 		
+		for(int i=0; i<=5; i++) {
+			timer[i].setOnClickListener(this);
+		}
 		
-		for (counter=0; counter<=5; counter++) {
-			final int constN = counter;
-			timer[constN].setOnKeyListener (new OnKeyListener(){
+		loadCheck();
+		
+		for (int i=0;i<=5;i++) {
+			if(i<=1) {
+				count = START_TIME;
+			} else if (i<=3) {
+				count = END_TIME;
+			} else {
+				count = PERIODIC_TIME;
+			}
+			Log.d(LOG_TAG, "i ="+i);
+			timer[i].setOnTouchListener(new OnTouchListener(){
+				final int id = count;
+				@SuppressWarnings("deprecation")
 				@Override
-				public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
-					if (arg2.getAction() == KeyEvent.ACTION_UP){
-						if (constN!= 5) {
-							if(timer[constN].getText().length() == 2) {
-								timer[constN+1].requestFocus();
-							}
-						} else {
-							if(timer[constN].getText().length() == 2) {
-								installTimer.requestFocus();
-							}
-						}
-					}
+				public boolean onTouch(View arg0, MotionEvent arg1) {
+					// TODO Auto-generated method stub
+					showDialog(id);
 					return false;
 				}
 			});
 		}
-
-		installTimer.setOnClickListener(this);
-		
-		loadCheck();
 		
 		alarm = new AlarmManagerBroadcastReceiver();
 	}
@@ -143,9 +158,30 @@ public class MainActivity extends Activity implements OnClickListener {
 				    check = 0;
 				    saveCheck();
 				}
-				
+			    break;
 		}
 	}
+	
+	@SuppressWarnings("deprecation")
+	protected Dialog onCreateDialog(int id) {
+		if (id == START_TIME || id == END_TIME || id == PERIODIC_TIME) {
+			count = id;
+			TimePickerDialog tpd = new TimePickerDialog(this, myCallBack, myHour, myMinute, true);
+			return tpd;
+	}
+		return super.onCreateDialog(id);
+	}
+	
+	 OnTimeSetListener myCallBack = new OnTimeSetListener() {
+		    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+		    	final int id = count;
+		    	Log.d(LOG_TAG, "id ="+id);
+		      myHour = hourOfDay;
+		      myMinute = minute; 
+		      timer[id].setText(myHour+"");
+		      timer[id+1].setText(myMinute+"");
+		    }
+	 };
 	
 	 void saveCheck() {
 		    sPref = getPreferences(MODE_PRIVATE);
