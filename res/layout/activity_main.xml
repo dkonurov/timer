@@ -97,15 +97,6 @@
         android:layout_marginTop="24dp"
         android:text="@string/periodic" />
 
-    <Button
-        android:id="@+id/set"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/periodicMinute"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="34dp"
-        android:text="@string/set" />
-
     <EditText
         android:id="@+id/periodicHours"
         android:layout_width="50dp"
@@ -141,5 +132,16 @@
         android:layout_alignLeft="@+id/dotsEnd"
         android:layout_centerVertical="true"
         android:text="@string/dots" />
+
+    <Button
+        android:id="@+id/set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/periodicHours"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="36dp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/button_blue_selector"
+        android:text="@string/set" />
 
 </RelativeLayout>
