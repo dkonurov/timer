@@ -159,6 +159,7 @@ public class MainActivity extends Activity implements OnClickListener {
 						return;
 					}
 					installTimer.setText("Остановить таймер");
+					installTimer.setBackgroundResource(R.drawable.button_red_selector);
 					Context context = this.getApplicationContext();
 				    alarm.SetAlarm(context, intTimer[0], intTimer[1], intTimer[2], intTimer[3], intTimer[4], intTimer[5]);
 				    check =1;
@@ -167,6 +168,7 @@ public class MainActivity extends Activity implements OnClickListener {
 					Context context = this.getApplicationContext();
 				    alarm.CancelAlarm(context);
 				    installTimer.setText("Установить таймер");
+				    installTimer.setBackgroundResource(R.drawable.button_blue_selector);
 				    check = 0;
 				    saveCheck();
 				}
@@ -222,6 +224,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		    		timer[i-1].setText(avaliable[i]);
 		    	}
 		    	installTimer.setText("Остановить таймер");
+		    	installTimer.setBackgroundResource(R.drawable.button_red_selector);
 		    }
 		    }
 		    

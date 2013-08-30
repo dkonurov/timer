@@ -9,7 +9,8 @@ import android.content.Intent;
  
 public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
  
- public void SetAlarm(Context context, int startHours, int startMinute, int endHours, int endMinute, int periodicHours, int periodicMinute)
+
+public void SetAlarm(Context context, int startHours, int startMinute, int endHours, int endMinute, int periodicHours, int periodicMinute)
     {
         AlarmManager startAm=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         AlarmManager endAm =(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
@@ -18,6 +19,7 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
         
         Calendar calendarStart = Calendar.getInstance();
         Calendar calendarEnd = Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
         
         calendarStart.set(Calendar.MINUTE, startMinute);
         calendarStart.set(Calendar.HOUR_OF_DAY, startHours);
@@ -36,6 +38,19 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
         	differenceHours = endHours+24-startHours;
         }
         
+        while (calendarStart.getTimeInMillis()< now.getTimeInMillis()) {
+        	startHours += periodicHours;
+        	startMinute += periodicMinute;
+        	calendarStart.set(Calendar.MINUTE, startMinute);
+        	calendarStart.set(Calendar.HOUR_OF_DAY, startHours);
+        }
+        
+        while (calendarEnd.getTimeInMillis()< now.getTimeInMillis()) {
+        	endHours += periodicHours;
+        	endMinute += periodicMinute;
+        	calendarEnd.set(Calendar.MINUTE, endMinute);
+        	calendarEnd.set(Calendar.HOUR_OF_DAY, endHours);
+        }
         int difference = differenceHours*60 + endMinute - startMinute;
         int periodic = periodicHours*60 + periodicMinute + difference;
         startAm.setRepeating(AlarmManager.RTC_WAKEUP, calendarStart.getTimeInMillis(), 1000 * 60 * periodic , piStart);
