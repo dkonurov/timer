@@ -56,6 +56,42 @@ public void SetAlarm(Context context, int startHours, int startMinute, int endHo
         startAm.setRepeating(AlarmManager.RTC_WAKEUP, calendarStart.getTimeInMillis(), 1000 * 60 * periodic , piStart);
         endAm.setRepeating(AlarmManager.RTC_WAKEUP, calendarEnd.getTimeInMillis(), 1000 * 60 *  periodic , piEnd);
    }
+
+	public void SetAlarm(Context context, int startHours, int startMinute, int endHours,int endMinute) {
+		AlarmManager startAm=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager endAm =(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        
+        Intent intent = new Intent(context, TimerService.class);
+        
+        Calendar calendarStart = Calendar.getInstance();
+        Calendar calendarEnd = Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
+        
+        calendarStart.set(Calendar.MINUTE, startMinute);
+        calendarStart.set(Calendar.HOUR_OF_DAY, startHours);
+        	
+        calendarEnd.set(Calendar.MINUTE, endMinute);
+        calendarEnd.set(Calendar.HOUR_OF_DAY, endHours);
+        	
+        calendarStart.set(Calendar.SECOND, 0);
+        calendarEnd.set(Calendar.SECOND, 0);
+        
+        PendingIntent piStart = PendingIntent.getService(context, 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piEnd = PendingIntent.getService(context, 1, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        
+        while (calendarStart.getTimeInMillis()< now.getTimeInMillis()) {
+        	startHours += AlarmManager.INTERVAL_DAY;
+        	calendarStart.set(Calendar.HOUR_OF_DAY, startHours);
+        }
+        
+        while (calendarEnd.getTimeInMillis()< now.getTimeInMillis()) {
+        	endHours += AlarmManager.INTERVAL_DAY;
+        	calendarEnd.set(Calendar.HOUR_OF_DAY, endHours);
+        }
+        
+        startAm.set(AlarmManager.RTC_WAKEUP, calendarStart.getTimeInMillis(), piStart);
+        endAm.set(AlarmManager.RTC_WAKEUP, calendarEnd.getTimeInMillis(), piEnd);
+	}
  
     public void CancelAlarm(Context context)
     {

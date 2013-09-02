@@ -16,8 +16,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -28,6 +32,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private EditText[] timer = new EditText[6];
 	
 	private Button installTimer;
+	private CheckBox editView ;
 	
 	private AlarmManagerBroadcastReceiver alarm;
 	
@@ -37,6 +42,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private static int START_TIME = 0;
 	private static int END_TIME = 2;
 	private static int PERIODIC_TIME = 4;
+	private boolean checkPeriodic = false;
 	private int check = 0;
 	private int setHour = 0;
 	private int setMinute = 0;
@@ -51,16 +57,26 @@ public class MainActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_main);
 		
 		installTimer = (Button) findViewById(R.id.set);
-
 		
+		editView = (CheckBox) findViewById(R.id.checkPeriodic);
+
 		timer[0] = (EditText) findViewById(R.id.startHours);
 		timer[1] = (EditText) findViewById(R.id.startMinute);
 		timer[2] = (EditText) findViewById(R.id.endHours);
 		timer[3] = (EditText) findViewById(R.id.endMinute);
 		timer[4] = (EditText) findViewById(R.id.periodicHours);
 		timer[5] = (EditText) findViewById(R.id.periodicMinute);
+		
+		TextView dots = (TextView) findViewById(R.id.dotsPeriodic);
+		TextView text = (TextView) findViewById(R.id.TextView02);
+		
+		text.setVisibility(View.INVISIBLE);
+		dots.setVisibility(View.INVISIBLE);
+		timer[4].setVisibility(View.INVISIBLE);
+		timer[5].setVisibility(View.INVISIBLE);
 
 		installTimer.setOnClickListener(this);
+		editView.setOnClickListener(this);
 		
 		for(int i=0; i<=5; i++) {
 			timer[i].setOnClickListener(this);
@@ -139,7 +155,13 @@ public class MainActivity extends Activity implements OnClickListener {
 					String[] stringTimer = new String[6];
 					int[] intTimer = new int[6];
 					boolean chekerTime = true;
-					for (int i=0;i<=5;i++) {
+					int n;
+					if (checkPeriodic) {
+						n = 5;
+					} else {
+						n = 3;
+					}
+					for (int i=0;i<=n;i++) {
 						stringTimer[i] = timer[i].getText().toString();
 						if (stringTimer[i].length() == 0) {
 							Toast.makeText(this, "все поля должны быть заполнены", Toast.LENGTH_SHORT).show();
@@ -161,7 +183,11 @@ public class MainActivity extends Activity implements OnClickListener {
 					installTimer.setText("Остановить таймер");
 					installTimer.setBackgroundResource(R.drawable.button_red_selector);
 					Context context = this.getApplicationContext();
+					if(checkPeriodic){
 				    alarm.SetAlarm(context, intTimer[0], intTimer[1], intTimer[2], intTimer[3], intTimer[4], intTimer[5]);
+					} else {
+						alarm.SetAlarm(context, intTimer[0], intTimer[1], intTimer[2], intTimer[3]);
+					}
 				    check =1;
 				    saveCheck();
 				} else {
@@ -173,6 +199,35 @@ public class MainActivity extends Activity implements OnClickListener {
 				    saveCheck();
 				}
 			    break;
+			case R.id.checkPeriodic:
+				if (!checkPeriodic) {
+					TextView dots = (TextView) findViewById(R.id.dotsPeriodic);
+					TextView text = (TextView) findViewById(R.id.TextView02);
+					dots.setVisibility(View.VISIBLE);
+					timer[4].setVisibility(View.VISIBLE);
+					timer[5].setVisibility(View.VISIBLE);
+					text.setVisibility(View.VISIBLE);
+					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+					        ViewGroup.LayoutParams.WRAP_CONTENT);
+					params.addRule(RelativeLayout.BELOW, R.id.periodicHours);
+					params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+					installTimer.setLayoutParams(params);
+					checkPeriodic = true;
+				} else {
+					TextView dots = (TextView) findViewById(R.id.dotsPeriodic);
+					TextView text = (TextView) findViewById(R.id.TextView02);
+					text.setVisibility(View.INVISIBLE);
+					dots.setVisibility(View.INVISIBLE);
+					timer[4].setVisibility(View.INVISIBLE);
+					timer[5].setVisibility(View.INVISIBLE);
+					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+					        ViewGroup.LayoutParams.WRAP_CONTENT);
+					params.addRule(RelativeLayout.BELOW, R.id.checkPeriodic);
+					params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+					installTimer.setLayoutParams(params);
+					checkPeriodic = false;
+
+				}
 		}
 	}
 	
@@ -207,6 +262,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		    	savedText += ",";
 		    	savedText += stringTimer[i];
 		    }
+		    savedText += ",";
+		    savedText += checkPeriodic;
 		    ed.putString(SAVED_TEXT, savedText);
 		    ed.commit();
 		  }
@@ -220,6 +277,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		    String[] avaliable = savedText.split(",");
 		    check = Integer.valueOf(avaliable[0]);
 		    if (check == 1) {
+			    checkPeriodic = Boolean.valueOf(avaliable[7]);
+			    showView();
 		    	for (int i=1; i<=6; i++) {
 		    		timer[i-1].setText(avaliable[i]);
 		    	}
@@ -232,5 +291,35 @@ public class MainActivity extends Activity implements OnClickListener {
 		    public void errorTime(View v, EditText set) {
 		    	Toast.makeText(this, "не правильное время", Toast.LENGTH_SHORT).show();
 		    	set.setText("");
+		    }
+		    
+		    public void showView() {
+		    	if (!checkPeriodic) {
+					TextView dots = (TextView) findViewById(R.id.dotsPeriodic);
+					TextView text = (TextView) findViewById(R.id.TextView02);
+					dots.setVisibility(View.VISIBLE);
+					timer[4].setVisibility(View.VISIBLE);
+					timer[5].setVisibility(View.VISIBLE);
+					text.setVisibility(View.VISIBLE);
+					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+					        ViewGroup.LayoutParams.WRAP_CONTENT);
+					params.addRule(RelativeLayout.BELOW, R.id.periodicHours);
+					params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+					installTimer.setLayoutParams(params);
+					checkPeriodic = true;
+				} else {
+					TextView dots = (TextView) findViewById(R.id.dotsPeriodic);
+					TextView text = (TextView) findViewById(R.id.TextView02);
+					text.setVisibility(View.INVISIBLE);
+					dots.setVisibility(View.INVISIBLE);
+					timer[4].setVisibility(View.INVISIBLE);
+					timer[5].setVisibility(View.INVISIBLE);
+					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+					        ViewGroup.LayoutParams.WRAP_CONTENT);
+					params.addRule(RelativeLayout.BELOW, R.id.checkPeriodic);
+					params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+					installTimer.setLayoutParams(params);
+					checkPeriodic = false;
+				}
 		    }
 }
