@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.FragmentTransaction;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
@@ -13,6 +12,9 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,16 +22,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 
-@SuppressLint("CommitTransaction")
+
 public class MainActivity extends Activity implements OnClickListener {
 
 	protected String LOG_TAG = "MyLog";
@@ -71,8 +74,18 @@ public class MainActivity extends Activity implements OnClickListener {
 		timer[1] = (EditText) findViewById(R.id.startMinute);
 		timer[2] = (EditText) findViewById(R.id.endHours);
 		timer[3] = (EditText) findViewById(R.id.endMinute);
-		timer[4] = (EditText) findViewById(R.id.periodicHours);
-		timer[5] = (EditText) findViewById(R.id.periodicMinute);
+		for (int i = 4; i <= 5; i++){
+		timer[i] = new EditText(getApplicationContext());
+		timer[i].setId(i);
+		timer[i].setInputType(InputType.TYPE_CLASS_NUMBER);
+		int px = dpToPx(50);
+		timer[i].setWidth(px);
+		timer[i].setHeight(LayoutParams.WRAP_CONTENT);
+		int maxLength = 10;
+		InputFilter[] filter = new InputFilter[1];
+		filter[0] = new InputFilter.LengthFilter(maxLength);
+		timer[i].setFilters(filter);
+		}
 		
 		scrollConteiner = (LinearLayout) findViewById(R.id.scrollContent);
 		
@@ -80,13 +93,13 @@ public class MainActivity extends Activity implements OnClickListener {
 		editView.setOnClickListener(this);
 		installTimer.setVisibility(View.INVISIBLE);
 		
-		for(int i=0; i<=3; i++) {
+		for(int i=0; i<=5; i++) {
 			timer[i].setOnClickListener(this);
 		}
 		
 		loadCheck();
 		
-		for (int i=0;i<=3;i++) {
+		for (int i=0;i<=5;i++) {
 			Log.d(LOG_TAG, "i ="+i);
 			timer[i].setOnTouchListener(new OnTouchListener(){
 				@SuppressWarnings("deprecation")
@@ -111,11 +124,11 @@ public class MainActivity extends Activity implements OnClickListener {
 							showDialog(END_TIME);
 							count = END_TIME;
 							break;
-						case R.id.periodicHours:
+						case 4:
 							showDialog(PERIODIC_TIME);
 							count = PERIODIC_TIME;
 							break;
-						case R.id.periodicMinute:
+						case 5:
 							showDialog(PERIODIC_TIME);
 							count = PERIODIC_TIME;
 							break;
@@ -205,8 +218,19 @@ public class MainActivity extends Activity implements OnClickListener {
 			    break;
 			case R.id.checkPeriodic:
 				if(!checkPeriodic) {
-					EditText news = new EditText(getApplicationContext());
-					scrollConteiner.addView(news);
+					LinearLayout periodic = new LinearLayout(getApplicationContext());
+					LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+					periodic.setOrientation(LinearLayout.HORIZONTAL);
+					periodic.setLayoutParams(params);
+					periodic.setGravity(android.view.Gravity.CENTER);
+					TextView dots = new TextView(getApplicationContext());
+					dots.setText(":");
+					periodic.addView(timer[4]);
+					periodic.addView(dots);
+					periodic.addView(timer[5]);
+					scrollConteiner.addView(periodic);
+					timer[4].setText("5");
+					checkPeriodic = true;
 				}
 				else {
 					checkPeriodic = false;
@@ -229,6 +253,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	
 	 OnTimeSetListener myCallBack = new OnTimeSetListener() {
 		    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+		    	Toast.makeText(getBaseContext(), "number ="+count, Toast.LENGTH_SHORT).show();
 		      timer[count].setText(hourOfDay+"");
 		      timer[count+1].setText(minute+"");
 		    }
@@ -274,5 +299,11 @@ public class MainActivity extends Activity implements OnClickListener {
 		    public void errorTime(View v, EditText set) {
 		    	Toast.makeText(this, "не правильное время", Toast.LENGTH_SHORT).show();
 		    	set.setText("");
+		    }
+		    
+		    public int dpToPx(int dp) {
+		        DisplayMetrics displayMetrics = getBaseContext().getResources().getDisplayMetrics();
+		        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));       
+		        return px;
 		    }
 }
