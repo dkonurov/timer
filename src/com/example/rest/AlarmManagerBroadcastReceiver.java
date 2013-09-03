@@ -103,7 +103,7 @@ public void SetAlarm(Context context, int startHours, int startMinute, int endHo
         alarmManager.cancel(senderStop);
         
     }
-
+    
 	@Override
 	public void onReceive(Context arg0, Intent arg1) {
 		// TODO Auto-generated method stub

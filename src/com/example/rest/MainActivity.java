@@ -1,13 +1,17 @@
 package com.example.rest;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.FragmentTransaction;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,15 +20,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+
+@SuppressLint("CommitTransaction")
 public class MainActivity extends Activity implements OnClickListener {
 
 	protected String LOG_TAG = "MyLog";
@@ -37,6 +42,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	private AlarmManagerBroadcastReceiver alarm;
 	
 	private SharedPreferences sPref;
+	
+	private LinearLayout scrollConteiner;
 	
 	private int count = 0;
 	private static int START_TIME = 0;
@@ -67,24 +74,19 @@ public class MainActivity extends Activity implements OnClickListener {
 		timer[4] = (EditText) findViewById(R.id.periodicHours);
 		timer[5] = (EditText) findViewById(R.id.periodicMinute);
 		
-		TextView dots = (TextView) findViewById(R.id.dotsPeriodic);
-		TextView text = (TextView) findViewById(R.id.TextView02);
+		scrollConteiner = (LinearLayout) findViewById(R.id.scrollContent);
 		
-		text.setVisibility(View.INVISIBLE);
-		dots.setVisibility(View.INVISIBLE);
-		timer[4].setVisibility(View.INVISIBLE);
-		timer[5].setVisibility(View.INVISIBLE);
-
 		installTimer.setOnClickListener(this);
 		editView.setOnClickListener(this);
+		installTimer.setVisibility(View.INVISIBLE);
 		
-		for(int i=0; i<=5; i++) {
+		for(int i=0; i<=3; i++) {
 			timer[i].setOnClickListener(this);
 		}
 		
 		loadCheck();
 		
-		for (int i=0;i<=5;i++) {
+		for (int i=0;i<=3;i++) {
 			Log.d(LOG_TAG, "i ="+i);
 			timer[i].setOnTouchListener(new OnTouchListener(){
 				@SuppressWarnings("deprecation")
@@ -145,6 +147,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onClick(View v) {
@@ -200,34 +204,14 @@ public class MainActivity extends Activity implements OnClickListener {
 				}
 			    break;
 			case R.id.checkPeriodic:
-				if (!checkPeriodic) {
-					TextView dots = (TextView) findViewById(R.id.dotsPeriodic);
-					TextView text = (TextView) findViewById(R.id.TextView02);
-					dots.setVisibility(View.VISIBLE);
-					timer[4].setVisibility(View.VISIBLE);
-					timer[5].setVisibility(View.VISIBLE);
-					text.setVisibility(View.VISIBLE);
-					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-					        ViewGroup.LayoutParams.WRAP_CONTENT);
-					params.addRule(RelativeLayout.BELOW, R.id.periodicHours);
-					params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-					installTimer.setLayoutParams(params);
-					checkPeriodic = true;
-				} else {
-					TextView dots = (TextView) findViewById(R.id.dotsPeriodic);
-					TextView text = (TextView) findViewById(R.id.TextView02);
-					text.setVisibility(View.INVISIBLE);
-					dots.setVisibility(View.INVISIBLE);
-					timer[4].setVisibility(View.INVISIBLE);
-					timer[5].setVisibility(View.INVISIBLE);
-					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-					        ViewGroup.LayoutParams.WRAP_CONTENT);
-					params.addRule(RelativeLayout.BELOW, R.id.checkPeriodic);
-					params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-					installTimer.setLayoutParams(params);
-					checkPeriodic = false;
-
+				if(!checkPeriodic) {
+					EditText news = new EditText(getApplicationContext());
+					scrollConteiner.addView(news);
 				}
+				else {
+					checkPeriodic = false;
+				}
+				break;
 		}
 	}
 	
@@ -278,7 +262,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		    check = Integer.valueOf(avaliable[0]);
 		    if (check == 1) {
 			    checkPeriodic = Boolean.valueOf(avaliable[7]);
-			    showView();
 		    	for (int i=1; i<=6; i++) {
 		    		timer[i-1].setText(avaliable[i]);
 		    	}
@@ -291,35 +274,5 @@ public class MainActivity extends Activity implements OnClickListener {
 		    public void errorTime(View v, EditText set) {
 		    	Toast.makeText(this, "не правильное время", Toast.LENGTH_SHORT).show();
 		    	set.setText("");
-		    }
-		    
-		    public void showView() {
-		    	if (!checkPeriodic) {
-					TextView dots = (TextView) findViewById(R.id.dotsPeriodic);
-					TextView text = (TextView) findViewById(R.id.TextView02);
-					dots.setVisibility(View.VISIBLE);
-					timer[4].setVisibility(View.VISIBLE);
-					timer[5].setVisibility(View.VISIBLE);
-					text.setVisibility(View.VISIBLE);
-					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-					        ViewGroup.LayoutParams.WRAP_CONTENT);
-					params.addRule(RelativeLayout.BELOW, R.id.periodicHours);
-					params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-					installTimer.setLayoutParams(params);
-					checkPeriodic = true;
-				} else {
-					TextView dots = (TextView) findViewById(R.id.dotsPeriodic);
-					TextView text = (TextView) findViewById(R.id.TextView02);
-					text.setVisibility(View.INVISIBLE);
-					dots.setVisibility(View.INVISIBLE);
-					timer[4].setVisibility(View.INVISIBLE);
-					timer[5].setVisibility(View.INVISIBLE);
-					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-					        ViewGroup.LayoutParams.WRAP_CONTENT);
-					params.addRule(RelativeLayout.BELOW, R.id.checkPeriodic);
-					params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-					installTimer.setLayoutParams(params);
-					checkPeriodic = false;
-				}
 		    }
 }
