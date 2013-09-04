@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="#FFFFFF"
+    android:background="#858585"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -26,6 +26,7 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_marginTop="20dp"
+		        android:textColor="#000000"
 		        android:layout_gravity="center_horizontal"
 		        android:text="@string/start" />
 		    
@@ -38,6 +39,7 @@
 			    
 			    <EditText
 		        android:id="@+id/startHours"
+		        android:textColor="#000000"
 		        android:layout_width="50dp"
 		        android:layout_height="wrap_content"
 		        android:maxLength="2"
@@ -49,6 +51,7 @@
 		
 		    <TextView
 		        android:id="@+id/dotsStart"
+		        android:textColor="#000000"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:text="@string/dots" />
@@ -56,6 +59,7 @@
 		    <EditText
 		        android:id="@+id/startMinute"
 		        android:layout_width="50dp"
+		        android:textColor="#000000"
 		        android:layout_height="wrap_content"
 		        android:maxLength="2"
 		        android:ems="10"
@@ -69,6 +73,7 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_gravity="center_horizontal"
+		        android:textColor="#000000"
 		        android:text="@string/end" />
 		     
 		     <LinearLayout
@@ -81,6 +86,7 @@
 		         <EditText
 		        android:id="@+id/endHours"
 		        android:layout_width="50dp"
+		        android:textColor="#000000"
 		        android:layout_height="wrap_content"
 		        android:maxLength="2"
 		        android:ems="10"
@@ -92,11 +98,13 @@
 		        android:id="@+id/dotsEnd"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
+		        android:textColor="#000000"
 		        android:text="@string/dots" />
 		
 		    <EditText
 		        android:id="@+id/endMinute"
 		        android:layout_width="50dp"
+		        android:textColor="#000000"
 		        android:layout_height="wrap_content"
 		        android:maxLength="2"
 		        android:ems="10"
@@ -105,6 +113,7 @@
 		     
 		     <CheckBox
 		        android:id="@+id/checkPeriodic"
+		        android:textColor="#000000"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_gravity="center_horizontal"
