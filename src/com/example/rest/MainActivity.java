@@ -10,12 +10,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -38,6 +41,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	protected String LOG_TAG = "MyLog";
 
 	private EditText[] timer = new EditText[6];
+	
+	private LinearLayout periodic;
 	
 	private Button installTimer;
 	private CheckBox editView ;
@@ -79,19 +84,21 @@ public class MainActivity extends Activity implements OnClickListener {
 		timer[i].setId(i);
 		timer[i].setInputType(InputType.TYPE_CLASS_NUMBER);
 		int px = dpToPx(50);
-		timer[i].setWidth(px);
-		timer[i].setHeight(LayoutParams.WRAP_CONTENT);
+		timer[i].setLayoutParams(new LayoutParams(px, LayoutParams.WRAP_CONTENT));
+		timer[i].setTextColor(Color.BLACK);
 		int maxLength = 10;
 		InputFilter[] filter = new InputFilter[1];
 		filter[0] = new InputFilter.LengthFilter(maxLength);
 		timer[i].setFilters(filter);
+		}
+		for (int i=0; i<=5; i++) {
+			timer[i].setFocusable(false);
 		}
 		
 		scrollConteiner = (LinearLayout) findViewById(R.id.scrollContent);
 		
 		installTimer.setOnClickListener(this);
 		editView.setOnClickListener(this);
-		installTimer.setVisibility(View.INVISIBLE);
 		
 		for(int i=0; i<=5; i++) {
 			timer[i].setOnClickListener(this);
@@ -218,21 +225,24 @@ public class MainActivity extends Activity implements OnClickListener {
 			    break;
 			case R.id.checkPeriodic:
 				if(!checkPeriodic) {
-					LinearLayout periodic = new LinearLayout(getApplicationContext());
-					LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-					periodic.setOrientation(LinearLayout.HORIZONTAL);
-					periodic.setLayoutParams(params);
-					periodic.setGravity(android.view.Gravity.CENTER);
+					periodic = new LinearLayout(getApplicationContext());
 					TextView dots = new TextView(getApplicationContext());
 					dots.setText(":");
 					periodic.addView(timer[4]);
 					periodic.addView(dots);
 					periodic.addView(timer[5]);
+					LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+					periodic.setOrientation(LinearLayout.HORIZONTAL);
+					params.gravity = Gravity.CENTER_HORIZONTAL;
+					int px = dpToPx(20);
+					params.topMargin = px;
+					periodic.setLayoutParams(params);
 					scrollConteiner.addView(periodic);
-					timer[4].setText("5");
 					checkPeriodic = true;
 				}
 				else {
+					periodic.removeAllViews();
+					scrollConteiner.removeView(periodic);
 					checkPeriodic = false;
 				}
 				break;
@@ -253,7 +263,6 @@ public class MainActivity extends Activity implements OnClickListener {
 	
 	 OnTimeSetListener myCallBack = new OnTimeSetListener() {
 		    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-		    	Toast.makeText(getBaseContext(), "number ="+count, Toast.LENGTH_SHORT).show();
 		      timer[count].setText(hourOfDay+"");
 		      timer[count+1].setText(minute+"");
 		    }
