@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -80,7 +79,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		timer[2] = (EditText) findViewById(R.id.endHours);
 		timer[3] = (EditText) findViewById(R.id.endMinute);
 		for (int i = 4; i <= 5; i++){
-		timer[i] = new EditText(getApplicationContext());
+		timer[i] = (EditText) getLayoutInflater().inflate(R.layout.edit_text, null);
 		timer[i].setId(i);
 		timer[i].setInputType(InputType.TYPE_CLASS_NUMBER);
 		int px = dpToPx(50);
