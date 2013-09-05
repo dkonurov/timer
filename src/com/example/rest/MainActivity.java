@@ -11,8 +11,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.CalendarContract.Colors;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.DisplayMetrics;
@@ -24,7 +26,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -38,6 +42,8 @@ import android.widget.Toast;
 public class MainActivity extends Activity implements OnClickListener {
 
 	protected String LOG_TAG = "MyLog";
+	
+	private ViewGroup mContainerView;
 
 	private EditText[] timer = new EditText[6];
 	
@@ -78,8 +84,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		timer[1] = (EditText) findViewById(R.id.startMinute);
 		timer[2] = (EditText) findViewById(R.id.endHours);
 		timer[3] = (EditText) findViewById(R.id.endMinute);
+		Drawable shape = getResources().getDrawable(R.drawable.text_for_timer);
 		for (int i = 4; i <= 5; i++){
-		timer[i] = (EditText) getLayoutInflater().inflate(R.layout.edit_text, null);
+		timer[i] = new EditText(this);
+		timer[i].setBackground(shape);
 		timer[i].setId(i);
 		timer[i].setInputType(InputType.TYPE_CLASS_NUMBER);
 		int px = dpToPx(50);
@@ -94,7 +102,7 @@ public class MainActivity extends Activity implements OnClickListener {
 			timer[i].setFocusable(false);
 		}
 		
-		scrollConteiner = (LinearLayout) findViewById(R.id.scrollContent);
+		mContainerView = (LinearLayout) findViewById(R.id.scrollContent);
 		
 		installTimer.setOnClickListener(this);
 		editView.setOnClickListener(this);
@@ -104,46 +112,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 		
 		loadCheck();
-		
-		for (int i=0;i<=5;i++) {
-			Log.d(LOG_TAG, "i ="+i);
-			timer[i].setOnTouchListener(new OnTouchListener(){
-				@SuppressWarnings("deprecation")
-				@Override
-				public boolean onTouch(View arg0, MotionEvent arg1) {
-					// TODO Auto-generated method stub
-					
-					switch(arg0.getId()){
-						case R.id.startHours:
-							showDialog(START_TIME);
-							count=START_TIME;
-							break;
-						case R.id.startMinute:
-							showDialog(START_TIME);
-							count = START_TIME;
-							break;
-						case R.id.endHours:
-							showDialog(END_TIME);
-							count = END_TIME;
-							break;
-						case R.id.endMinute:
-							showDialog(END_TIME);
-							count = END_TIME;
-							break;
-						case 4:
-							showDialog(PERIODIC_TIME);
-							count = PERIODIC_TIME;
-							break;
-						case 5:
-							showDialog(PERIODIC_TIME);
-							count = PERIODIC_TIME;
-							break;
-					}
-					
-					return false;
-				}
-			});
-		}
 		
 		alarm = new AlarmManagerBroadcastReceiver();
 	}
@@ -226,6 +194,7 @@ public class MainActivity extends Activity implements OnClickListener {
 				if(!checkPeriodic) {
 					periodic = new LinearLayout(getApplicationContext());
 					TextView dots = new TextView(getApplicationContext());
+					dots.setTextColor(Color.parseColor("#000000"));
 					dots.setText(":");
 					periodic.addView(timer[4]);
 					periodic.addView(dots);
@@ -236,14 +205,46 @@ public class MainActivity extends Activity implements OnClickListener {
 					int px = dpToPx(20);
 					params.topMargin = px;
 					periodic.setLayoutParams(params);
-					scrollConteiner.addView(periodic);
+					TranslateAnimation open = new TranslateAnimation (0, 0, -20, 0);
+					open.setDuration(1000);
+					periodic.startAnimation(open);
+					AddItem(periodic);
 					checkPeriodic = true;
 				}
 				else {
+					TranslateAnimation close = new TranslateAnimation (0, -20, 0, 0);
+					close.setDuration(1000);
+					periodic.startAnimation(close);
+					DeleteItem(periodic);
 					periodic.removeAllViews();
-					scrollConteiner.removeView(periodic);
+					timer[4].setText("");
+					timer[5].setText("");
 					checkPeriodic = false;
 				}
+				break;
+			case R.id.startHours:
+				showDialog(START_TIME);
+				count=START_TIME;
+				break;
+			case R.id.startMinute:
+				showDialog(START_TIME);
+				count = START_TIME;
+				break;
+			case R.id.endHours:
+				showDialog(END_TIME);
+				count = END_TIME;
+				break;
+			case R.id.endMinute:
+				showDialog(END_TIME);
+				count = END_TIME;
+				break;
+			case 4:
+				showDialog(PERIODIC_TIME);
+				count = PERIODIC_TIME;
+				break;
+			case 5:
+				showDialog(PERIODIC_TIME);
+				count = PERIODIC_TIME;
 				break;
 		}
 	}
@@ -252,9 +253,11 @@ public class MainActivity extends Activity implements OnClickListener {
 	protected Dialog onCreateDialog(int id) {
 		if (id == START_TIME || id == END_TIME) {
 			TimePickerDialog tpd = new TimePickerDialog(this, myCallBack, setHour, setMinute, true);
+			tpd.getWindow().getAttributes().windowAnimations = R.style.PauseDialogAnimation;
 			return tpd;
 		} else if (id == PERIODIC_TIME) {
 			TimePickerDialog tpd = new TimePickerDialog(this, myCallBack, periodicHour, periodicMinute, true);
+			tpd.getWindow().getAttributes().windowAnimations = R.style.PauseDialogAnimation;
 			return tpd;
 		}
 		return super.onCreateDialog(id);
@@ -313,5 +316,16 @@ public class MainActivity extends Activity implements OnClickListener {
 		        DisplayMetrics displayMetrics = getBaseContext().getResources().getDisplayMetrics();
 		        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));       
 		        return px;
+		    }
+		    
+		    @SuppressWarnings("unused")
+			private void AddItem(View newView) {
+		    	
+		    	mContainerView.addView(newView);
+		    }
+		    
+		    @SuppressWarnings("unused")
+			private void DeleteItem(View newView) {
+		    	mContainerView.removeView(newView);
 		    }
 }
