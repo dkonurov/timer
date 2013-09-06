@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/TimeDialog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#858585"
+    android:orientation="vertical"
+    tools:context=".TimePicker">
+       
+    <LinearLayout 
+            android:id="@+id/custom_timepicker"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:gravity="center"
+    		android:baselineAligned="true"
+    		android:orientation="horizontal">
+   
+        	<LinearLayout
+        		android:id="@+id/hours_conteiner"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:layout_margin="5dp"
+        		android:gravity="center"
+        		android:orientation="vertical" >
+        		<Button
+            		android:id="@+id/hours_plus"
+            		android:layout_width="28dp"
+            		android:layout_height="28dp"    
+            		android:background="@drawable/button_up_selector"/> 
+        		<EditText
+		            android:id="@+id/hours_dislpay"
+		            android:layout_width="45dp"
+		            android:layout_height="35dp"
+		            android:background="@drawable/text_for_timer"
+		            android:gravity="center"
+		            android:inputType="number"
+		            android:singleLine="true"
+		            android:textColor="#000000" >
+		        </EditText>
+		        <Button
+		            android:id="@+id/hours_minus"
+		            android:layout_width="28dp"
+		            android:layout_height="28dp"       
+		            android:background="@drawable/button_down_selector" />
+		    </LinearLayout>
+		    <LinearLayout
+		        android:id="@+id/minute_container"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_margin="5dp"
+		        android:gravity="center"
+		        android:orientation="vertical" >
+		        <Button
+		            android:id="@+id/minute_plus"
+		            android:layout_width="28dp"
+		            android:layout_height="28dp"       
+		            android:background="@drawable/button_up_selector" />
+		        <EditText
+		            android:id="@+id/minute_display"
+		            android:layout_width="45dp"
+		            android:layout_height="35dp"
+		            android:background="@drawable/text_for_timer"
+		            android:gravity="center"
+		            android:inputType="number"
+		            android:textColor="#000000"
+		            android:singleLine="true" />
+		        <Button
+		            android:id="@+id/minute_minus"
+		            android:layout_width="28dp"
+		            android:layout_height="28dp"       
+		            android:background="@drawable/button_down_selector"/>
+    		</LinearLayout>
+    </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ControlButtons"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:padding="5dip" >
+
+                <Button android:id="@+id/SetTime" 
+                    android:layout_width="103dp"
+                    android:text="@string/accept" 
+                    android:background="@drawable/button_blue_selector"
+                    android:textColor="#FFFFFF"
+                    android:layout_height="45dp"  />
+                
+
+        </LinearLayout>
+</LinearLayout>

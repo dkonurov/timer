@@ -1,9 +1,12 @@
 package com.example.rest;
 
+import java.util.Calendar;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
@@ -28,17 +31,21 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.Toast;
 
 
 
+@SuppressLint("NewApi")
 public class MainActivity extends Activity implements OnClickListener {
 
 	protected String LOG_TAG = "MyLog";
@@ -55,8 +62,6 @@ public class MainActivity extends Activity implements OnClickListener {
 	private AlarmManagerBroadcastReceiver alarm;
 	
 	private SharedPreferences sPref;
-	
-	private LinearLayout scrollConteiner;
 	
 	private int count = 0;
 	private static int START_TIME = 0;
@@ -223,52 +228,31 @@ public class MainActivity extends Activity implements OnClickListener {
 				}
 				break;
 			case R.id.startHours:
-				showDialog(START_TIME);
 				count=START_TIME;
+				showTimePickerDialog(setHour, setMinute);
 				break;
 			case R.id.startMinute:
-				showDialog(START_TIME);
 				count = START_TIME;
+				showTimePickerDialog(setHour, setMinute);				
 				break;
 			case R.id.endHours:
-				showDialog(END_TIME);
 				count = END_TIME;
+				showTimePickerDialog(setHour, setMinute);
 				break;
 			case R.id.endMinute:
-				showDialog(END_TIME);
 				count = END_TIME;
+				showTimePickerDialog(setHour, setMinute);
 				break;
 			case 4:
-				showDialog(PERIODIC_TIME);
 				count = PERIODIC_TIME;
+				showTimePickerDialog(periodicHour, periodicMinute);
 				break;
 			case 5:
-				showDialog(PERIODIC_TIME);
 				count = PERIODIC_TIME;
+				showTimePickerDialog(periodicHour, periodicMinute);
 				break;
 		}
 	}
-	
-	@SuppressWarnings("deprecation")
-	protected Dialog onCreateDialog(int id) {
-		if (id == START_TIME || id == END_TIME) {
-			TimePickerDialog tpd = new TimePickerDialog(this, myCallBack, setHour, setMinute, true);
-			tpd.getWindow().getAttributes().windowAnimations = R.style.PauseDialogAnimation;
-			return tpd;
-		} else if (id == PERIODIC_TIME) {
-			TimePickerDialog tpd = new TimePickerDialog(this, myCallBack, periodicHour, periodicMinute, true);
-			tpd.getWindow().getAttributes().windowAnimations = R.style.PauseDialogAnimation;
-			return tpd;
-		}
-		return super.onCreateDialog(id);
-	}
-	
-	 OnTimeSetListener myCallBack = new OnTimeSetListener() {
-		    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-		      timer[count].setText(hourOfDay+"");
-		      timer[count+1].setText(minute+"");
-		    }
-	 };
 	
 	 void saveCheck() {
 		    sPref = getPreferences(MODE_PRIVATE);
@@ -318,14 +302,18 @@ public class MainActivity extends Activity implements OnClickListener {
 		        return px;
 		    }
 		    
-		    @SuppressWarnings("unused")
 			private void AddItem(View newView) {
 		    	
 		    	mContainerView.addView(newView);
 		    }
 		    
-		    @SuppressWarnings("unused")
 			private void DeleteItem(View newView) {
 		    	mContainerView.removeView(newView);
 		    }
+			public void showTimePickerDialog(int hour, int minute) {
+			    DialogFragment newFragment = new TimePickerFragment(timer[count],timer[count+1], hour, minute);
+			    newFragment.show(getFragmentManager(), "timePicker");
+			    }
 }
+
+
