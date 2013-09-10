@@ -92,22 +92,22 @@ public class MainActivity extends Activity implements OnClickListener {
 		Drawable shape = getResources().getDrawable(R.drawable.text_for_timer);
 		for (int i = 4; i <= 5; i++){
 		timer[i] = new EditText(this);
+		timer[i].setFilters(new InputFilter[]{
+			new InputFilter.LengthFilter(2)	
+		});
 		timer[i].setBackground(shape);
 		timer[i].setId(i);
 		timer[i].setInputType(InputType.TYPE_CLASS_NUMBER);
 		int px = dpToPx(50);
 		timer[i].setLayoutParams(new LayoutParams(px, LayoutParams.WRAP_CONTENT));
 		timer[i].setTextColor(Color.BLACK);
-		int maxLength = 10;
-		InputFilter[] filter = new InputFilter[1];
-		filter[0] = new InputFilter.LengthFilter(maxLength);
-		timer[i].setFilters(filter);
+
 		}
 		for (int i=0; i<=5; i++) {
 			timer[i].setFocusable(false);
 		}
 		
-		mContainerView = (LinearLayout) findViewById(R.id.scrollContent);
+		mContainerView = (ViewGroup) findViewById(R.id.scrollContent);
 		
 		installTimer.setOnClickListener(this);
 		editView.setOnClickListener(this);
@@ -117,6 +117,21 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 		
 		loadCheck();
+		
+		periodic = new LinearLayout(getApplicationContext());
+		TextView dots = new TextView(getApplicationContext());
+		dots.setTextColor(Color.parseColor("#000000"));
+		dots.setText(":");
+		periodic.addView(timer[4]);
+		periodic.addView(dots);
+		periodic.addView(timer[5]);
+		periodic.setLayoutTransition(null);
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+		periodic.setOrientation(LinearLayout.HORIZONTAL);
+		params.gravity = Gravity.CENTER_HORIZONTAL;
+		int px = dpToPx(20);
+		params.topMargin = px;
+		periodic.setLayoutParams(params);
 		
 		alarm = new AlarmManagerBroadcastReceiver();
 	}
@@ -141,7 +156,6 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@SuppressLint("NewApi")
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -167,7 +181,8 @@ public class MainActivity extends Activity implements OnClickListener {
 							intTimer[i] = Integer.valueOf(stringTimer[i]);
 							if (i == 5 && intTimer[4] == 0 && intTimer[5] == 0) {
 								Toast.makeText(this, "должны быть время между отдыхом", Toast.LENGTH_LONG).show();
-								showDialog(PERIODIC_TIME);
+								count = PERIODIC_TIME;
+								showTimePickerDialog(periodicHour, periodicMinute);
 								chekerTime = false;
 								break;
 							}
@@ -197,31 +212,11 @@ public class MainActivity extends Activity implements OnClickListener {
 			    break;
 			case R.id.checkPeriodic:
 				if(!checkPeriodic) {
-					periodic = new LinearLayout(getApplicationContext());
-					TextView dots = new TextView(getApplicationContext());
-					dots.setTextColor(Color.parseColor("#000000"));
-					dots.setText(":");
-					periodic.addView(timer[4]);
-					periodic.addView(dots);
-					periodic.addView(timer[5]);
-					LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-					periodic.setOrientation(LinearLayout.HORIZONTAL);
-					params.gravity = Gravity.CENTER_HORIZONTAL;
-					int px = dpToPx(20);
-					params.topMargin = px;
-					periodic.setLayoutParams(params);
-					TranslateAnimation open = new TranslateAnimation (0, 0, -20, 0);
-					open.setDuration(1000);
-					periodic.startAnimation(open);
 					AddItem(periodic);
 					checkPeriodic = true;
 				}
 				else {
-					TranslateAnimation close = new TranslateAnimation (0, -20, 0, 0);
-					close.setDuration(1000);
-					periodic.startAnimation(close);
-					DeleteItem(periodic);
-					periodic.removeAllViews();
+					RemoveItem(periodic);
 					timer[4].setText("");
 					timer[5].setText("");
 					checkPeriodic = false;
@@ -307,7 +302,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		    	mContainerView.addView(newView);
 		    }
 		    
-			private void DeleteItem(View newView) {
+			private void RemoveItem(View newView) {
 		    	mContainerView.removeView(newView);
 		    }
 			public void showTimePickerDialog(int hour, int minute) {
