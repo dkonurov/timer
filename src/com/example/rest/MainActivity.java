@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract.Colors;
+import android.support.v4.view.MotionEventCompat;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.DisplayMetrics;
@@ -46,7 +47,7 @@ import android.widget.Toast;
 
 
 @SuppressLint("NewApi")
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends Activity implements OnTouchListener,OnClickListener {
 
 	protected String LOG_TAG = "MyLog";
 	
@@ -89,6 +90,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		timer[1] = (EditText) findViewById(R.id.startMinute);
 		timer[2] = (EditText) findViewById(R.id.endHours);
 		timer[3] = (EditText) findViewById(R.id.endMinute);
+		
 		Drawable shape = getResources().getDrawable(R.drawable.text_for_timer);
 		for (int i = 4; i <= 5; i++){
 		timer[i] = new EditText(this);
@@ -309,6 +311,19 @@ public class MainActivity extends Activity implements OnClickListener {
 			    DialogFragment newFragment = new TimePickerFragment(timer[count],timer[count+1], hour, minute);
 			    newFragment.show(getFragmentManager(), "timePicker");
 			    }
+
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				// TODO Auto-generated method stub
+				
+				int action = arg1.getAction();
+				float x = arg1.getX();
+				float y = arg1.getY();
+				
+				Log.v("ON_TOUCH", "Action = " + action + "View:" + arg0.toString());
+				Log.v("ON_TOUCH", "X = "+x+" Y = "+y);
+				return false;
+			}
 }
 
 

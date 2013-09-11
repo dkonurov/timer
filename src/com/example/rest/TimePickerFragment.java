@@ -1,13 +1,12 @@
 package com.example.rest;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
@@ -16,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
@@ -43,10 +43,13 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	public Button minuteMinus;
 	public Button setTime;
 	
+	public LinearLayout hourConteiner;
+	public LinearLayout minuteConteiner;
+	
 	public Integer hour;
 	public Integer minute;
 	
-	public GestureDetector gestureDetector;
+	private int mTouchSlop;
 	
 	public  TimePickerFragment(EditText view1, EditText view2, int setHours, int setMinute) {
 		timerHour = view1;
@@ -59,7 +62,25 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 		      Bundle savedInstanceState) {
 		    getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		    
-		    gestureDetector = new GestureDetector(getDialog().getContext(), new MyGestureListener());
+		    final GestureDetector gesture = new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener(){
+		    	
+		    	@Override
+		    	public boolean onDown(MotionEvent e) {
+		    		return true;
+		    	}
+		    	
+		    	@Override
+		    	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+		    		Log.v("ON_SCROLL", velocityX+" "+velocityY);
+		    		return super.onFling(e1, e2, velocityX, velocityY);
+		    	}
+		    	
+		    	@Override
+		    	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+		    		Log.v("ON_SCROLL", distanceX+" "+distanceY);
+		    		return super.onScroll(e1, e2, distanceX, distanceY);
+		    	}
+		    });
 		    
 		    getDialog().getWindow().getAttributes().windowAnimations = R.style.PauseDialogAnimation;
 		    View v = inflater.inflate(R.layout.fragment_time_picker, null);
@@ -71,8 +92,15 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 		    minutePlus = (Button) v.findViewById(R.id.minute_plus);
 		    minuteMinus = (Button) v.findViewById(R.id.minute_minus);
 		    
-		    LinearLayout hourConteiner = (LinearLayout) v.findViewById(R.id.hours_conteiner);
-		    LinearLayout minuteConteiner = (LinearLayout) v.findViewById(R.id.minute_container);
+		    hourConteiner = (LinearLayout) v.findViewById(R.id.hours_conteiner);
+		    minuteConteiner = (LinearLayout) v.findViewById(R.id.minute_container);
+		    
+		    hourConteiner.setOnTouchListener(new OnTouchListener() {
+		    	@Override
+		    	public boolean onTouch(View v, MotionEvent event) {
+		    		return gesture.onTouchEvent(event);
+		    	}
+		    });
 		    
 		    
 		    setTime.setOnClickListener(this);
@@ -101,48 +129,12 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 				@Override
 				public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
 					// TODO Auto-generated method stub
-					if (arg2.getAction() == KeyEvent.ACTION_DOWN) {
+					if (arg2.getAction() == KeyEvent.ACTION_DOWN && arg1 != KeyEvent.KEYCODE_DEL) {
 						if (pickerHour.getText().length() != 0 ) {
-							Log.d(LOG_TAG, (char)arg1+"");
-							int set = 0;
-							String pickerisHour = pickerHour.getText().toString();
-							int checkHours = Integer.parseInt(pickerisHour);
-							switch (arg1) {
-								case KeyEvent.KEYCODE_NUMPAD_0:
-									set =0;
-									Log.d(LOG_TAG, "press 1");
-									break;
-								case KeyEvent.KEYCODE_NUMPAD_1:
-									set = 1;
-									break;
-								case KeyEvent.KEYCODE_NUMPAD_2:
-									set = 2;
-									break;
-								case KeyEvent.KEYCODE_NUMPAD_3:
-									set = 3;
-									break;
-								case KeyEvent.KEYCODE_NUMPAD_4:
-									set = 4;
-									break;
-								case KeyEvent.KEYCODE_NUMPAD_5:
-									set = 5;
-									break;
-								case KeyEvent.KEYCODE_NUMPAD_6:
-									set = 6;
-									break;
-								case KeyEvent.KEYCODE_NUMPAD_7:
-									set = 7;
-									break;
-								case KeyEvent.KEYCODE_NUMPAD_8:
-									set = 8;
-									break;
-								case KeyEvent.KEYCODE_NUMPAD_9:
-									set = 9;
-									break;
-							}
-							if (checkHours + set > 23) {
-								pickerHour.setText(pickerisHour.substring(0, 1));
-								pickerHour.setSelection(1,1);
+							int set = Integer.parseInt(arg1+"")-7;
+							int checkHours = Integer.parseInt(pickerHour.getText().toString());
+							if (checkHours*10 + set > 23) {
+								return true;
 							} 
 						}
 					}
@@ -156,13 +148,12 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 				@Override
 				public boolean onKey(View v, int keyCode, KeyEvent event) {
 					// TODO Auto-generated method stub
-					if (event.getAction() == KeyEvent.ACTION_UP) {
+					if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode != KeyEvent.KEYCODE_DEL) {
 						if (pickerMinute.getText().length() != 0) {
-							String pickerisMinute = pickerMinute.getText().toString();
-							int checkMinute = Integer.parseInt(pickerisMinute);
-							if (checkMinute > 59) {
-								pickerMinute.setText(pickerisMinute.substring(0,1));
-								pickerMinute.setSelection(1,1);
+							int set = Integer.parseInt(keyCode+"")-7;
+							int checkMinute = Integer.parseInt(pickerMinute.getText().toString());
+							if (checkMinute*10 + set > 59) {
+								return true;
 							}
 						}
 					}
@@ -180,7 +171,7 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 		            	}
 		            	pickerHour.setFocusable(false);
 		            	InputMethodManager inputMethodManager = (InputMethodManager) getDialog().getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-						inputMethodManager.hideSoftInputFromWindow(getView().getApplicationWindowToken(), inputMethodManager.HIDE_IMPLICIT_ONLY);
+						inputMethodManager.hideSoftInputFromWindow(getView().getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		            	
 		            }
 		               //do job here owhen Edittext lose focus 
@@ -307,21 +298,6 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 			// TODO Auto-generated method stub
 			
 		}
-		
-		private class MyGestureListener extends SimpleOnGestureListener {
-			@Override
-			public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-				Log.d(LOG_TAG, "x ="+(int)distanceX+" y ="+(int)distanceY);
-				return true;
-				
-			}
-		}
-		
-		public boolean onTouchEvent(MotionEvent event)
-		    {
-		        if (gestureDetector.onTouchEvent(event)) return true;
-		        return true;
-		    }
 
 		@Override
 		public boolean onDown(MotionEvent arg0) {
@@ -333,7 +309,6 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 		public boolean onFling(MotionEvent arg0, MotionEvent arg1, float arg2,
 				float arg3) {
 			// TODO Auto-generated method stub
-			Log.d(LOG_TAG, arg2+" "+arg3);
 			return false;
 		}
 
@@ -347,8 +322,7 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 		public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2,
 				float arg3) {
 			// TODO Auto-generated method stub
-			
-			Log.d(LOG_TAG, arg2+" "+arg3);
+			Log.v("ON_SCROLL", arg1+" "+arg3);
 			return false;
 		}
 
