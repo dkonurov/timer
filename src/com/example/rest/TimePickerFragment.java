@@ -5,8 +5,10 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v4.view.MotionEventCompat;
+import android.support.v4.view.VelocityTrackerCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
@@ -14,6 +16,7 @@ import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.View.OnFocusChangeListener;
@@ -21,21 +24,42 @@ import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Scroller;
+import android.widget.TableLayout;
+import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 @SuppressLint({ "NewApi", "ValidFragment" })
-public class TimePickerFragment extends DialogFragment implements OnClickListener, android.view.View.OnClickListener, OnGestureListener {
+public class TimePickerFragment extends DialogFragment implements OnClickListener, android.view.View.OnClickListener {
 	
 	protected static final String LOG_TAG = "myLog";
 	public EditText timerHour;
 	public EditText timerMinute;
 	
+	public TextView hourSmall;
+	public TextView hourBig;
+	
+	public View myView;
+	
+	public Scroller mScroller;
+	
 	public EditText pickerHour;
 	public EditText pickerMinute;
+	
+	private boolean checker = false;
+	
+	public ViewGroup hourConteiner;
+	public ViewGroup minuteConteiner;
+	
+	public VelocityTracker mVelocityTracker = null;
+	
+	 final GestureDetector gesture;
 	
 	public Button hourPlus;
 	public Button minutePlus;
@@ -43,44 +67,72 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	public Button minuteMinus;
 	public Button setTime;
 	
-	public LinearLayout hourConteiner;
-	public LinearLayout minuteConteiner;
-	
 	public Integer hour;
 	public Integer minute;
 	
-	private int mTouchSlop;
 	
 	public  TimePickerFragment(EditText view1, EditText view2, int setHours, int setMinute) {
 		timerHour = view1;
 		timerMinute = view2;
 		hour = setHours;
 		minute = setMinute;
+		
+		gesture = new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener(){
+	    	
+	    	@Override
+	    	public boolean onDown(MotionEvent e) {
+	    		return false;
+	    	}
+	    	
+	    	@Override
+	    	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
+	    		if(checker) {
+	    			hourPlus.setVisibility(View.VISIBLE);
+	    			hourConteiner.removeView(hourBig);
+	    			hourMinus.setVisibility(View.VISIBLE);
+	    			hourConteiner.removeView(hourSmall);
+	    			checker = false;
+	    		}
+				return super.onFling(e1, e2, velocityX, velocityY);
+	    		
+	    	}
+	    	
+	    	@Override
+	    	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+	    		if(!checker) {
+	    		
+	    		int forHourBig;
+	    		if (hour == 23) {
+	    			forHourBig = 0;
+	    		} else {
+	    			forHourBig = hour++;
+	    		}
+	    		hourBig.setText(forHourBig+"");
+	    		hourConteiner.addView(hourBig, 3);
+	    		hourPlus.setVisibility(View.INVISIBLE);
+	    		hourBig.setVisibility(View.VISIBLE);
+	    		
+	    		int forHourSmall;
+	    		if (hour == 0) {
+	    			forHourSmall = 23;
+	    		} else {
+	    			forHourSmall = hour--;
+	    		}
+	    		hourSmall.setText(forHourSmall+"");
+	    		hourConteiner.addView(hourSmall,1);
+	    		hourMinus.setVisibility(View.INVISIBLE);
+	    		hourSmall.setVisibility(View.VISIBLE);
+	    		checker = true;
+	    		}	
+	    		
+	    		return super.onScroll(e1, e2, distanceX, distanceY);
+	    	}
+	    });
 	}
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		      Bundle savedInstanceState) {
 		    getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-		    
-		    final GestureDetector gesture = new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener(){
-		    	
-		    	@Override
-		    	public boolean onDown(MotionEvent e) {
-		    		return true;
-		    	}
-		    	
-		    	@Override
-		    	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		    		Log.v("ON_SCROLL", velocityX+" "+velocityY);
-		    		return super.onFling(e1, e2, velocityX, velocityY);
-		    	}
-		    	
-		    	@Override
-		    	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		    		Log.v("ON_SCROLL", distanceX+" "+distanceY);
-		    		return super.onScroll(e1, e2, distanceX, distanceY);
-		    	}
-		    });
 		    
 		    getDialog().getWindow().getAttributes().windowAnimations = R.style.PauseDialogAnimation;
 		    View v = inflater.inflate(R.layout.fragment_time_picker, null);
@@ -92,16 +144,53 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 		    minutePlus = (Button) v.findViewById(R.id.minute_plus);
 		    minuteMinus = (Button) v.findViewById(R.id.minute_minus);
 		    
-		    hourConteiner = (LinearLayout) v.findViewById(R.id.hours_conteiner);
-		    minuteConteiner = (LinearLayout) v.findViewById(R.id.minute_container);
+    		hourSmall = new TextView(getDialog().getContext());
+    		hourBig = new TextView(getDialog().getContext());
 		    
-		    hourConteiner.setOnTouchListener(new OnTouchListener() {
+		    hourConteiner = (ViewGroup) v.findViewById(R.id.hours_conteiner);
+		    minuteConteiner = (ViewGroup) v.findViewById(R.id.minute_container);
+		    
+		    hourPlus.setOnTouchListener(new OnTouchListener(){
+
 		    	@Override
-		    	public boolean onTouch(View v, MotionEvent event) {
-		    		return gesture.onTouchEvent(event);
+		    	public boolean onTouch(View v,MotionEvent event) {
+		    		if (gesture.onTouchEvent(event)) {
+		    			return true;
+		    		} else {
+		    			return false;
+		    		}
 		    	}
 		    });
 		    
+		    hourMinus.setOnTouchListener(new OnTouchListener() {
+		    	public boolean onTouch(View view, MotionEvent event) {
+		    		if (gesture.onTouchEvent(event)) {
+		    			return true;
+		    		} else {
+		    			return false;
+		    		}
+		    	}
+		    });
+		    
+		    minutePlus.setOnTouchListener(new OnTouchListener(){
+		    	public boolean onTouch(View v, MotionEvent event) {
+		    		if (gesture.onTouchEvent(event)) {
+		    			return true;
+		    		} else {
+		    			return false;
+		    		}
+		    	}
+		    });
+		    
+		    minuteMinus.setOnTouchListener(new OnTouchListener(){
+		    	public boolean  onTouch(View v, MotionEvent event) {
+		    		if (gesture.onTouchEvent(event)) {
+		    			return true;
+		    		} else {
+		    			return false;
+		    		}
+		    	}
+		    });
 		    
 		    setTime.setOnClickListener(this);
 		    hourPlus.setOnClickListener(this);
@@ -223,7 +312,7 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 				}
 		    	
 		    });
-		    
+		    myView = v;
 		    return v;
 		  }
 
@@ -297,44 +386,5 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 		public void onClick(DialogInterface arg0, int arg1) {
 			// TODO Auto-generated method stub
 			
-		}
-
-		@Override
-		public boolean onDown(MotionEvent arg0) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public boolean onFling(MotionEvent arg0, MotionEvent arg1, float arg2,
-				float arg3) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public void onLongPress(MotionEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2,
-				float arg3) {
-			// TODO Auto-generated method stub
-			Log.v("ON_SCROLL", arg1+" "+arg3);
-			return false;
-		}
-
-		@Override
-		public void onShowPress(MotionEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public boolean onSingleTapUp(MotionEvent arg0) {
-			// TODO Auto-generated method stub
-			return false;
 		}
 }
