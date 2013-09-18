@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v4.view.ViewCompat;
+import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -33,6 +34,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -61,14 +63,14 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	public EditText pickerHour;
 	public EditText pickerMinute;
 	
-	public Scroller mScroller;
+	public OverScroller mScroller;
 	
 	public OnTouchListener mGestureListener;
 	
 	private boolean checker = false;
 	
-	public LinearLayoutScrolling hourConteiner;
-	public LinearLayoutScrolling minuteConteiner;
+	public LinearLayout hourConteiner;
+	public LinearLayout minuteConteiner;
 	
 	public VelocityTracker mVelocityTracker = null;
 	
@@ -79,7 +81,7 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	public Button hourMinus;
 	public Button minuteMinus;
 	public Button setTime;
-	
+
 	public Integer hour;
 	public Integer minute;
 	
@@ -93,70 +95,26 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	    	
 	    	@Override
 	    	public boolean onDown(MotionEvent e) {
+	    		
 	    		return false;
 	    	}
 	    	
 	    	@Override
 	    	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
 	    		
-	    		final float distanceTimeFactor = 0.4f;
-	    		final float totalDx = (distanceTimeFactor * velocityX/2);
-	    		final float totalDy = (distanceTimeFactor * velocityY/2);
-	    		//hourConteiner.onAnimationMove(totalDx, totalDy, (long) (1000 * distanceTimeFactor));
-				return true;
-	    		
+	    		actionUp();
+	    		return false;
 	    	}
 	    	
 	    	@Override
 	    	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-	    		if(!checker) {
-	    		
-	    		Drawable shape = getResources().getDrawable(R.drawable.text_for_timer);
-	    		int forHourBig;
-	    		if (hour == 23) {
-	    			forHourBig = 0;
-	    		} else {
-	    			forHourBig = hour+1;
+	    		if((e2.getX()-e1.getX())% dpToPx(50) == 0 && e2.getX()-e1.getX() > 0) {
+	    			TextView gavno = new TextView(getDialog().getContext());
+	    			int hours = hour+1;
+	    			gavno.setText(hours+"");
+	    			hourConteiner.addView(gavno,3);
 	    		}
-	    		hourBig.setText(forHourBig+"");
-	    		hourBig.setTextSize(25);
-	    		hourBig.setHeight(dpToPx(50));
-	    		hourBig.setWidth(dpToPx(50));
-	    		hourBig.setBackground(shape);
-	    		hourConteiner.addView(hourBig, 1);
-	    		hourPlus.setVisibility(View.INVISIBLE);
-	    		hourBig.setVisibility(View.VISIBLE);
-	    		
-	    		int forHourSmall;
-	    		if (hour == 0) {
-	    			forHourSmall = 23;
-	    		} else {
-	    			forHourSmall = hour-1;
-	    		}
-	    		for (int i=0; i<22; i++) {
-	    		hourSmall[i].setText(forHourSmall+"");
-	    		hourSmall[i].setOnTouchListener(mGestureListener);
-	    		hourSmall[i].setTextSize(25);
-	    		hourSmall[i].setHeight(dpToPx(50));
-	    		hourSmall[i].setWidth(dpToPx(50));
-	    		hourSmall[i].setBackground(shape);
-	    		hourConteiner.addView(hourSmall[i],i+3);
-	    		if (forHourSmall == 0){
-	    			forHourSmall = 23;
- 	    		} else {
- 	    			forHourSmall--;
-	    		}
-	    		
-	    		hourSmall[i].setVisibility(View.VISIBLE);
-	    		}
-	    		hourMinus.setVisibility(View.INVISIBLE);
-	    		Log.v("hour", hour+"");
-	    		Log.v("forHourBig",forHourBig+"");
-	    		Log.v("forHourSmall", forHourSmall+"");
-	    		checker = true;
-	    		}	
-	    		
-	    		hourConteiner.onMove(-distanceX, distanceY);
+    			hourConteiner.scrollBy(0, (int) distanceY); 
 	    		return true;
 	    	}
 	    	
@@ -170,6 +128,7 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 		    getDialog().getWindow().getAttributes().windowAnimations = R.style.PauseDialogAnimation;
 		    View v = inflater.inflate(R.layout.fragment_time_picker, null);
 		    
+		    mScroller = new OverScroller(getDialog().getContext());
 		    
 		    setTime = (Button) v.findViewById(R.id.SetTime);
 		    hourPlus = (Button) v.findViewById(R.id.hours_plus);
@@ -181,8 +140,9 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
     		hourSmall[i] = new TextView(getDialog().getContext());
     		hourBig = new TextView(getDialog().getContext());
 		    
-		    hourConteiner = (LinearLayoutScrolling) v.findViewById(R.id.hours_conteiner);
-		    minuteConteiner = (LinearLayoutScrolling) v.findViewById(R.id.minute_container);
+		    hourConteiner = (LinearLayout) v.findViewById(R.id.hours_conteiner);
+
+		    minuteConteiner = (LinearLayout) v.findViewById(R.id.minute_container);
 		    
 		    	mGestureListener = new View.OnTouchListener() {
 				
@@ -422,24 +382,4 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));       
 	        return px;
 	    }
-		
-		private class LinearLayoutScrolling extends LinearLayout {
-
-			public LinearLayoutScrolling(Context context) {
-				super(context);
-				// TODO Auto-generated constructor stub
-			}
-			
-			public void onMove(float dx, float dy) {
-				super.scrollTo((int)dx, (int)dy);
-			}
-			
-			public void scrollTo(int x, int y) {
-				if (!mScroller.isFinished()) {
-					mScroller.abortAnimation();
-				}
-				onMove(x,y);
-			}
-			
-		}
 }
