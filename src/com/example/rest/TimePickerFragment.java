@@ -91,10 +91,10 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	    	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
 	    		
 	    		hourConteiner.scrollTo(0, 0);
-	    		int set = setText/50;
+	    		int set = setText/40;
 	    		setText(set, pickerHour);
 	    		Log.v("onFling", set+"");
-	    		Scroll = 0;
+	    		setText = 0;
 	    		actionUp();
 	    		return true;
 	    	}
@@ -147,9 +147,9 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	    		int diff =(int) (e2.getY() - e1.getY());
 	    		
 	    		if (diff >= LastDiff) {
-	    			Scroll=10;
+	    			Scroll=8;
 	    		} else {
-	    			Scroll=-10;
+	    			Scroll=-8;
 	    		}
 	    		setText+=Scroll;
 	    		Log.v("setText", setText+"");
@@ -197,7 +197,7 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 					if (arg1.getAction() == MotionEvent.ACTION_UP) {
 						Log.v("ACTION", "ACTION UP!!!");
 						if (checker) {
-							int set = setText/50;
+							int set = setText/40;
 							setText(set, pickerHour);
 				    		Log.v("Action up", set+"");
 				    		setText = 0;
@@ -432,7 +432,7 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	    }
 		
 		public void setText(int set, EditText timer) {
-			for (int i=0, length = Math.abs(set); i<=length; i++) {
+			for (int i=0, length = Math.abs(set); i<length; i++) {
 				if(set>0){
     				if(hour == 0) {
     					hour = 23;
