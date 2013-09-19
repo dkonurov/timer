@@ -17,40 +17,50 @@
     		android:baselineAligned="true"
     		android:orientation="horizontal">
     		
-        	<LinearLayout
+        	<ScrollView
         		android:id="@+id/hours_conteiner"
         		android:layout_width="wrap_content"
         		android:isScrollContainer="true"
+        		android:scrollbarSize="3dp"
         		android:layout_height="150dp"
         		android:layout_margin="5dp"
         		android:gravity="center"
         		android:orientation="vertical" >
         		
-        		<Button
-            		android:id="@+id/hours_plus"
-            		android:layout_width="50dp"
-            		android:layout_height="50dp"    
-            		android:background="@drawable/button_up_selector"/> 
-            		
-        		<EditText
-		            android:id="@+id/hours_dislpay"
-		            android:layout_width="50dp"
-		            android:layout_height="50dp"
-		            android:maxLength="2"
-		            android:background="@drawable/text_for_timer"
-		            android:textSize="25sp"
-		            android:gravity="center"
-		            android:inputType="number"
-		            android:singleLine="true"
-		            android:textColor="#000000" >
-		        </EditText>
-		        
-		        <Button
-		            android:id="@+id/hours_minus"
-		            android:layout_width="50dp"
-		            android:layout_height="50dp"       
-		            android:background="@drawable/button_down_selector" />
-		    </LinearLayout>
+        	    <LinearLayout
+        	        android:id="@+id/hours_scroll"
+        	        android:layout_width="wrap_content"
+        	        android:layout_height="wrap_content"
+        	        android:isScrollContainer="true"
+        	        android:gravity="center"
+        	        android:orientation="vertical" >
+        		
+	        		<Button
+	            		android:id="@+id/hours_plus"
+	            		android:layout_width="50dp"
+	            		android:layout_height="50dp"    
+	            		android:background="@drawable/button_up_selector"/> 
+	            		
+	        		<EditText
+			            android:id="@+id/hours_dislpay"
+			            android:layout_width="50dp"
+			            android:layout_height="50dp"
+			            android:maxLength="2"
+			            android:background="@drawable/text_for_timer"
+			            android:textSize="25sp"
+			            android:gravity="center"
+			            android:inputType="number"
+			            android:singleLine="true"
+			            android:textColor="#000000" >
+			        </EditText>
+			        
+			        <Button
+			            android:id="@+id/hours_minus"
+			            android:layout_width="50dp"
+			            android:layout_height="50dp"       
+			            android:background="@drawable/button_down_selector" />
+		        </LinearLayout>
+		    </ScrollView>
 		    <LinearLayout
 		        android:id="@+id/minute_container"
 		        android:layout_width="wrap_content"
