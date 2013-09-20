@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -26,6 +27,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.OverScroller;
+import android.widget.ScrollView;
+import android.widget.Scroller;
 import android.widget.TextView;
 
 @SuppressLint({ "NewApi", "ValidFragment" })
@@ -49,7 +52,7 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	public EditText pickerHour;
 	public EditText pickerMinute;
 	
-	public OverScroller mScroller;
+	public Scroller mScroller;
 	
 	public OnTouchListener mGestureListener;
 	
@@ -83,7 +86,8 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	    	
 	    	@Override
 	    	public boolean onDown(MotionEvent e) {
-	    		
+	    		mLastScroll = mScroller.getCurrY();
+	    		Log.v("mLastScroll", mLastScroll+"");
 	    		return false;
 	    	}
 	    	
@@ -144,7 +148,7 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	    			Log.v("forHourSmall", forHourSmall+"");
 	    			checker = true;
 	    		}  
-	    		int diff =(int) (e2.getY() - e1.getY());
+	    		int diff =(int) (mScroller.getCurrY()-mLastScroll);
 	    		
 	    		if (diff >= LastDiff) {
 	    			Scroll=8;
@@ -152,6 +156,7 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 	    			Scroll=-8;
 	    		}
 	    		setText+=Scroll;
+	    		Log.v("mScroller", mScroller.getCurrY()+"");
 	    		Log.v("setText", setText+"");
 	    		Log.v("diff", diff+"");
 	    		Log.v("mLastdiff", LastDiff+"");
@@ -170,7 +175,7 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 		    getDialog().getWindow().getAttributes().windowAnimations = R.style.PauseDialogAnimation;
 		    View v = inflater.inflate(R.layout.fragment_time_picker, null);
 		    
-		    mScroller = new OverScroller(getDialog().getContext());
+		    mScroller = new Scroller(getDialog().getContext());
 		    
 		    setTime = (Button) v.findViewById(R.id.SetTime);
 		    hourPlus = (Button) v.findViewById(R.id.hours_plus);
@@ -185,6 +190,105 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 		    hourConteiner = (LinearLayout) v.findViewById(R.id.hours_scroll);
 
 		    minuteConteiner = (LinearLayout) v.findViewById(R.id.minute_container);
+		    
+		    ScrollView hourScroll = (ScrollView) v.findViewById(R.id.hours_conteiner);
+		    hourScroll.setVerticalScrollBarEnabled(false);
+		    
+		    onTimePickerListener hourListener = new onTimePickerListener(23) {
+
+				@Override
+				public String getText() {
+					// TODO Auto-generated method stub
+					return pickerHour.getText().toString();
+				}
+
+				@Override
+				public void setText(int set) {
+					// TODO Auto-generated method stub
+					pickerHour.setText(set+"");
+				}
+
+				@Override
+				public Object getDialogInput() {
+					// TODO Auto-generated method stub
+					return getDialog().getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+				}
+
+				@Override
+				public IBinder getViewIBinder() {
+					// TODO Auto-generated method stub
+					return getView().getApplicationWindowToken();
+				}
+
+				@Override
+				public void focusable(boolean seter) {
+					// TODO Auto-generated method stub
+					pickerHour.setFocusable(seter);
+				}
+
+				@Override
+				public void selectionIndex() {
+					// TODO Auto-generated method stub
+					int selectionIndex = pickerHour.length();
+					pickerHour.setSelection(selectionIndex, selectionIndex);
+				}
+
+				@Override
+				void focusableTouch(boolean seter) {
+					// TODO Auto-generated method stub
+					pickerHour.setFocusableInTouchMode(seter);
+					pickerHour.setFocusable(seter);
+				}
+		    	
+		    };
+		    
+		    onTimePickerListener minuteListener = new onTimePickerListener(59) {
+
+				@Override
+				public String getText() {
+					// TODO Auto-generated method stub
+					return pickerMinute.getText().toString();
+				}
+
+				@Override
+				public void setText(int set) {
+					// TODO Auto-generated method stub
+					pickerMinute.setText(set+"");
+				}
+
+				@Override
+				public Object getDialogInput() {
+					// TODO Auto-generated method stub
+					return getDialog().getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+				}
+
+				@Override
+				public IBinder getViewIBinder() {
+					// TODO Auto-generated method stub
+					return getView().getApplicationWindowToken();
+				}
+
+				@Override
+				public void focusable(boolean seter) {
+					// TODO Auto-generated method stub
+					pickerMinute.setFocusable(seter);
+				}
+
+				@Override
+				public void selectionIndex() {
+					// TODO Auto-generated method stub
+					int selectionIndex = pickerHour.length();
+					pickerMinute.setSelection(selectionIndex, selectionIndex);
+				}
+
+				@Override
+				void focusableTouch(boolean seter) {
+					// TODO Auto-generated method stub
+					pickerMinute.setFocusableInTouchMode(seter);
+					pickerMinute.setFocusable(seter);
+				}
+		    	
+		    };
 		    
 		    	mGestureListener = new View.OnTouchListener() {
 				
@@ -240,105 +344,17 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 		    pickerHour.setId(1);
 		    pickerMinute.setId(2);
 		    
-		    pickerHour.setOnKeyListener(new OnKeyListener(){
-
-				@Override
-				public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
-					// TODO Auto-generated method stub
-					if (arg2.getAction() == KeyEvent.ACTION_DOWN && arg1 != KeyEvent.KEYCODE_DEL) {
-						if (pickerHour.getText().length() != 0 ) {
-							int set = Integer.parseInt(arg1+"")-7;
-							int checkHours = Integer.parseInt(pickerHour.getText().toString());
-							if (checkHours*10 + set > 23) {
-								return true;
-							} 
-						}
-					}
-					return false;
-				}
-		    	
-		    });
+		    pickerHour.setOnKeyListener(hourListener);
 		    
-		    pickerMinute.setOnKeyListener(new OnKeyListener() {
-
-				@Override
-				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					// TODO Auto-generated method stub
-					if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode != KeyEvent.KEYCODE_DEL) {
-						if (pickerMinute.getText().length() != 0) {
-							int set = Integer.parseInt(keyCode+"")-7;
-							int checkMinute = Integer.parseInt(pickerMinute.getText().toString());
-							if (checkMinute*10 + set > 59) {
-								return true;
-							}
-						}
-					}
-					return false;
-				}
-		    	
-		    });
+		    pickerMinute.setOnKeyListener(minuteListener);
 		    
-		    pickerHour.setOnFocusChangeListener(new OnFocusChangeListener() {          
-
-		        public void onFocusChange(View v, boolean hasFocus) {
-		            if(!hasFocus) {
-		            	if (pickerHour.getText().length() == 0) {
-		            		pickerHour.setText("0");
-		            	}
-		            	pickerHour.setFocusable(false);
-		            	InputMethodManager inputMethodManager = (InputMethodManager) getDialog().getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-						inputMethodManager.hideSoftInputFromWindow(getView().getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-		            	
-		            }
-		               //do job here owhen Edittext lose focus 
-		        }
-		    });
+		    pickerHour.setOnFocusChangeListener(hourListener);
 		    
-		    pickerMinute.setOnFocusChangeListener(new OnFocusChangeListener() {          
-
-		        public void onFocusChange(View v, boolean hasFocus) {
-		            if(!hasFocus) {
-		            	if (pickerMinute.getText().length() == 0) {
-		            		pickerHour.setText("0");
-		            	}
-		            	pickerMinute.setFocusable(false);
-		            }
-		               //do job here owhen Edittext lose focus 
-		        }
-		    });
+		    pickerMinute.setOnFocusChangeListener(minuteListener);
 		    
-		    pickerHour.setOnLongClickListener(new OnLongClickListener() {
-
-				@Override
-				public boolean onLongClick(View arg0) {
-					// TODO Auto-generated method stub
-					pickerHour.setFocusableInTouchMode(true);
-					pickerHour.setFocusable(true);
-					InputMethodManager inputMethodManager = (InputMethodManager) getDialog().getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-					inputMethodManager.toggleSoftInputFromWindow(getView().getApplicationWindowToken(), InputMethodManager.SHOW_FORCED,0);
-					int selectionIndex = pickerHour.length();
-					Log.d(LOG_TAG, selectionIndex+"");
-					pickerHour.setSelection(selectionIndex, selectionIndex);
-					return false;
-				}
-		    	
-		    });
+		    pickerHour.setOnLongClickListener(hourListener);
 		    
-		    pickerMinute.setOnLongClickListener(new OnLongClickListener() {
-
-				@Override
-				public boolean onLongClick(View v) {
-					// TODO Auto-generated method stub
-					pickerMinute.setFocusable(true);
-					pickerMinute.setFocusableInTouchMode(true);
-					InputMethodManager inputMethodManager = (InputMethodManager) getDialog().getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-					inputMethodManager.toggleSoftInputFromWindow(getView().getApplicationWindowToken(), InputMethodManager.SHOW_FORCED,0);
-					int selectionIndex = pickerMinute.length();
-					pickerMinute.setSelection(selectionIndex, selectionIndex);
-					return false;
-				}
-		    	
-		    });
+		    pickerMinute.setOnLongClickListener(minuteListener);
 		    myView = v;
 		    return v;
 		  }

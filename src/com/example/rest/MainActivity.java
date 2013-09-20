@@ -5,6 +5,7 @@ import java.util.Calendar;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
@@ -33,7 +34,10 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -51,7 +55,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 
 	protected String LOG_TAG = "MyLog";
 	
-	private ViewGroup mContainerView;
+	private LinearLayout mContainerView;
 
 	private EditText[] timer = new EditText[6];
 	
@@ -60,9 +64,13 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	private Button installTimer;
 	private CheckBox editView ;
 	
+	private Context context;
+	
 	private AlarmManagerBroadcastReceiver alarm;
 	
 	private SharedPreferences sPref;
+	
+	private Animation anim;
 	
 	private int count = 0;
 	private static int START_TIME = 0;
@@ -85,6 +93,8 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		installTimer = (Button) findViewById(R.id.set);
 		
 		editView = (CheckBox) findViewById(R.id.checkPeriodic);
+		
+		context = MainActivity.this;
 
 		timer[0] = (EditText) findViewById(R.id.startHours);
 		timer[1] = (EditText) findViewById(R.id.startMinute);
@@ -97,7 +107,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		timer[i].setFilters(new InputFilter[]{
 			new InputFilter.LengthFilter(2)	
 		});
-		timer[i].setBackground(shape);
+		timer[i].setBackgroundDrawable(shape);
 		timer[i].setId(i);
 		timer[i].setInputType(InputType.TYPE_CLASS_NUMBER);
 		int px = dpToPx(50);
@@ -109,7 +119,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 			timer[i].setFocusable(false);
 		}
 		
-		mContainerView = (ViewGroup) findViewById(R.id.scrollContent);
+		mContainerView = (LinearLayout) findViewById(R.id.scrollContent);
 		
 		installTimer.setOnClickListener(this);
 		editView.setOnClickListener(this);
@@ -120,14 +130,13 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		
 		loadCheck();
 		
-		periodic = new LinearLayout(getApplicationContext());
-		TextView dots = new TextView(getApplicationContext());
+		periodic = new LinearLayout(MainActivity.this);
+		TextView dots = new TextView(MainActivity.this);
 		dots.setTextColor(Color.parseColor("#000000"));
 		dots.setText(":");
 		periodic.addView(timer[4]);
 		periodic.addView(dots);
 		periodic.addView(timer[5]);
-		periodic.setLayoutTransition(null);
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
 		periodic.setOrientation(LinearLayout.HORIZONTAL);
 		params.gravity = Gravity.CENTER_HORIZONTAL;
@@ -161,6 +170,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
+		CustomTimePickerDialog timePicker;
 		switch(v.getId()) {
 			case R.id.set:
 				if (check == 0) {
@@ -184,7 +194,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 							if (i == 5 && intTimer[4] == 0 && intTimer[5] == 0) {
 								Toast.makeText(this, "должны быть время между отдыхом", Toast.LENGTH_LONG).show();
 								count = PERIODIC_TIME;
-								showTimePickerDialog(periodicHour, periodicMinute);
+								//showTimePickerDialog(periodicHour, periodicMinute);
 								chekerTime = false;
 								break;
 							}
@@ -214,11 +224,34 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 			    break;
 			case R.id.checkPeriodic:
 				if(!checkPeriodic) {
-					AddItem(periodic);
+					anim = AnimationUtils.loadAnimation(this,R.anim.appearance);
+					periodic.startAnimation(anim);
+					mContainerView.addView(periodic);
 					checkPeriodic = true;
 				}
 				else {
-					RemoveItem(periodic);
+					anim = AnimationUtils.loadAnimation(this, R.anim.disappearance);
+					anim.setAnimationListener(new Animation.AnimationListener() {
+						
+						@Override
+						public void onAnimationStart(Animation animation) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void onAnimationRepeat(Animation animation) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void onAnimationEnd(Animation animation) {
+							// TODO Auto-generated method stub
+							mContainerView.removeView(periodic);
+						}
+					});
+					periodic.startAnimation(anim);
 					timer[4].setText("");
 					timer[5].setText("");
 					checkPeriodic = false;
@@ -226,28 +259,29 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 				break;
 			case R.id.startHours:
 				count=START_TIME;
-				showTimePickerDialog(setHour, setMinute);
+				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);
 				break;
 			case R.id.startMinute:
 				count = START_TIME;
-				showTimePickerDialog(setHour, setMinute);				
+				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);				
 				break;
 			case R.id.endHours:
 				count = END_TIME;
-				showTimePickerDialog(setHour, setMinute);
+				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);
 				break;
 			case R.id.endMinute:
 				count = END_TIME;
-				showTimePickerDialog(setHour, setMinute);
+				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);
 				break;
 			case 4:
 				count = PERIODIC_TIME;
-				showTimePickerDialog(periodicHour, periodicMinute);
+				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], periodicHour, periodicMinute);
 				break;
 			case 5:
 				count = PERIODIC_TIME;
-				showTimePickerDialog(periodicHour, periodicMinute);
+				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], periodicHour, periodicMinute);
 				break;
+				
 		}
 	}
 	
@@ -298,19 +332,6 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));       
 		        return px;
 		    }
-		    
-			private void AddItem(View newView) {
-		    	
-		    	mContainerView.addView(newView);
-		    }
-		    
-			private void RemoveItem(View newView) {
-		    	mContainerView.removeView(newView);
-		    }
-			public void showTimePickerDialog(int hour, int minute) {
-			    DialogFragment newFragment = new TimePickerFragment(timer[count],timer[count+1], hour, minute);
-			    newFragment.show(getFragmentManager(), "timePicker");
-			    }
 
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
@@ -322,8 +343,30 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 				
 				Log.v("ON_TOUCH", "Action = " + action + "View:" + arg0.toString());
 				Log.v("ON_TOUCH", "X = "+x+" Y = "+y);
+				Toast.makeText(context, x+" "+y, Toast.LENGTH_SHORT).show();
 				return false;
 			}
+			
+			protected Dialog onCreateDialog(int id) {
+				int seterHours;
+				int seterMinute;
+				if (id == START_TIME) {
+					seterHours = setHour;
+					seterMinute = setMinute;
+				} else if (id == END_TIME) {
+					seterHours = setHour;
+					seterMinute = setMinute;
+				} else {
+					seterHours = periodicHour;
+					seterMinute = periodicMinute;
+				}
+				CustomTimePickerDialog TimePicker = new CustomTimePickerDialog(context, timer[id], timer [id+1],seterHours, seterMinute);
+				return super.onCreateDialog(id);
+			}
+			
+		public void startActivityForResult() {
+			
+		}
 }
 
 
