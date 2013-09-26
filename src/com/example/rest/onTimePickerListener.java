@@ -51,7 +51,6 @@ public abstract class onTimePickerListener implements OnKeyListener, OnFocusChan
 		focusableTouch(true);
 		InputMethodManager inputMethodManager = (InputMethodManager) getDialogInput();
 		inputMethodManager.toggleSoftInputFromWindow(getViewIBinder(), InputMethodManager.SHOW_FORCED,0);
-		selectionIndex();
 		return false;
 	}
 
@@ -64,8 +63,6 @@ public abstract class onTimePickerListener implements OnKeyListener, OnFocusChan
 	abstract public IBinder getViewIBinder();
 	
 	abstract public void focusable(boolean seter);
-	
-	abstract public void selectionIndex();
 	
 	abstract void focusableTouch(boolean seter);
 }

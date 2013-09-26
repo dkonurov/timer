@@ -1,4 +1,4 @@
-package com.example.rest;
+/*package com.example.rest;
 
 import android.annotation.SuppressLint;
 import android.app.DialogFragment;
@@ -466,3 +466,4 @@ public class TimePickerFragment extends DialogFragment implements OnClickListene
 			timer.setText(hour+"");
 		}
 }
+*/

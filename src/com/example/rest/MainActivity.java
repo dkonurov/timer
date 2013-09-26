@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -24,6 +25,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -110,7 +112,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		timer[i].setBackgroundDrawable(shape);
 		timer[i].setId(i);
 		timer[i].setInputType(InputType.TYPE_CLASS_NUMBER);
-		int px = dpToPx(50);
+		int px = (int)dpToPx(50);
 		timer[i].setLayoutParams(new LayoutParams(px, LayoutParams.WRAP_CONTENT));
 		timer[i].setTextColor(Color.BLACK);
 
@@ -140,7 +142,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
 		periodic.setOrientation(LinearLayout.HORIZONTAL);
 		params.gravity = Gravity.CENTER_HORIZONTAL;
-		int px = dpToPx(20);
+		int px = (int)dpToPx(20);
 		params.topMargin = px;
 		periodic.setLayoutParams(params);
 		
@@ -259,26 +261,62 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 				break;
 			case R.id.startHours:
 				count=START_TIME;
+				if(timer[count].getText().length() != 0) {
+					setHour = Integer.valueOf(timer[count].getText().toString());
+				}
+				if (timer[count+1].getText().length() != 0) {
+					setMinute = Integer.valueOf(timer[count+1].getText().toString());
+				}
 				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);
 				break;
 			case R.id.startMinute:
 				count = START_TIME;
+				if(timer[count].getText().length() != 0) {
+					setHour = Integer.valueOf(timer[count].getText().toString());
+				}
+				if (timer[count+1].getText().length() != 0) {
+					setMinute = Integer.valueOf(timer[count+1].getText().toString());
+				}
 				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);				
 				break;
 			case R.id.endHours:
 				count = END_TIME;
+				if(timer[count].getText().length() != 0) {
+					setHour = Integer.valueOf(timer[count].getText().toString());
+				}
+				if (timer[count+1].getText().length() != 0) {
+					setMinute = Integer.valueOf(timer[count+1].getText().toString());
+				}
 				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);
 				break;
 			case R.id.endMinute:
 				count = END_TIME;
+				if(timer[count].getText().length() != 0) {
+					setHour = Integer.valueOf(timer[count].getText().toString());
+				}
+				if (timer[count+1].getText().length() != 0) {
+					setMinute = Integer.valueOf(timer[count+1].getText().toString());
+				}
 				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);
 				break;
 			case 4:
 				count = PERIODIC_TIME;
+				if(timer[count].getText().length() != 0) {
+					periodicHour = Integer.valueOf(timer[count].getText().toString());
+				}
+				if (timer[count+1].getText().length() != 0) {
+					periodicMinute = Integer.valueOf(timer[count+1].getText().toString());
+				}
 				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], periodicHour, periodicMinute);
 				break;
 			case 5:
 				count = PERIODIC_TIME;
+				if(timer[count].getText().length() != 0) {
+					periodicHour = Integer.valueOf(timer[count].getText().toString());
+				}
+				if (timer[count+1].getText().length() != 0) {
+					periodicMinute = Integer.valueOf(timer[count+1].getText().toString());
+				}
 				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], periodicHour, periodicMinute);
 				break;
 				
@@ -327,9 +365,9 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		    	set.setText("");
 		    }
 		    
-		    public int dpToPx(int dp) {
-		        DisplayMetrics displayMetrics = getBaseContext().getResources().getDisplayMetrics();
-		        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));       
+		    public float dpToPx(int dp) {
+				Resources r = getResources();
+				float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
 		        return px;
 		    }
 

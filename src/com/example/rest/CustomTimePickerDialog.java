@@ -1,15 +1,20 @@
 package com.example.rest;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -21,6 +26,7 @@ import android.widget.ScrollView;
 import android.widget.Scroller;
 import android.widget.TextView;
 
+@SuppressLint("NewApi")
 public class CustomTimePickerDialog implements OnClickListener, android.view.View.OnClickListener{
 	
 	public Dialog dialog;
@@ -94,6 +100,8 @@ public class CustomTimePickerDialog implements OnClickListener, android.view.Vie
     		hourBig = new TextView(dialog.getContext());
 		    
 		    hourConteiner = (LinearLayout) dialog.findViewById(R.id.hours_scroll);
+		    
+		    hourConteiner.setOverScrollMode(hourConteiner.OVER_SCROLL_ALWAYS);
 
 		    minuteConteiner = (LinearLayout) dialog.findViewById(R.id.minute_container);
 		    
@@ -130,13 +138,6 @@ public class CustomTimePickerDialog implements OnClickListener, android.view.Vie
 				public void focusable(boolean seter) {
 					// TODO Auto-generated method stub
 					pickerHour.setFocusable(seter);
-				}
-
-				@Override
-				public void selectionIndex() {
-					// TODO Auto-generated method stub
-					int selectionIndex = pickerHour.length();
-					pickerHour.setSelection(selectionIndex, selectionIndex);
 				}
 
 				@Override
@@ -181,13 +182,6 @@ public class CustomTimePickerDialog implements OnClickListener, android.view.Vie
 				}
 
 				@Override
-				public void selectionIndex() {
-					// TODO Auto-generated method stub
-					int selectionIndex = pickerHour.length();
-					pickerMinute.setSelection(selectionIndex, selectionIndex);
-				}
-
-				@Override
 				void focusableTouch(boolean seter) {
 					// TODO Auto-generated method stub
 					pickerMinute.setFocusableInTouchMode(seter);
@@ -206,9 +200,20 @@ public class CustomTimePickerDialog implements OnClickListener, android.view.Vie
 					}
 					if (arg1.getAction() == MotionEvent.ACTION_UP) {
 						Log.v("ACTION", "ACTION UP!!!");
+						//if stay pressed button this function fix bug
+						isPressedButton();
 						if (checker) {
-							int set = setText/40;
-							setText(set, pickerHour);
+							Log.v("hourConteiner", hourConteiner.getScrollY()+"");
+							Log.v("getHeight", hourBig.getHeight()+"");
+							double set = (double) hourConteiner.getScrollY()/hourBig.getHeight();
+							int setTuda;
+							if (set%1>=0.5) {
+								setTuda = (int) set;
+							} else {
+								setTuda = (int) set-1;
+							}
+							//set Text after Scrolling
+							setText(setTuda, pickerHour);
 				    		Log.v("Action up", set+"");
 				    		setText = 0;
 							hourConteiner.scrollTo(0, 0);
@@ -277,7 +282,7 @@ public class CustomTimePickerDialog implements OnClickListener, android.view.Vie
 		    	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
 		    		
 		    		hourConteiner.scrollTo(0, 0);
-		    		int set = setText/40;
+		    		int set =hourConteiner.getScrollY()/hourBig.getHeight();
 		    		setText(set, pickerHour);
 		    		Log.v("onFling", set+"");
 		    		setText = 0;
@@ -287,6 +292,7 @@ public class CustomTimePickerDialog implements OnClickListener, android.view.Vie
 		    	
 		    	@Override
 		    	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+		    		mScroller.startScroll(0, 0, 0, (int)-distanceY);
 		    		if(!checker) {
 		    			Drawable shape = dialog.getContext().getResources().getDrawable(R.drawable.text_for_timer);
 		    			int forHourBig;
@@ -297,8 +303,10 @@ public class CustomTimePickerDialog implements OnClickListener, android.view.Vie
 		    			}
 		    			hourBig.setText(forHourBig+"");
 		    			hourBig.setTextSize(25);
-		    			hourBig.setHeight(dpToPx(50));
-		    			hourBig.setWidth(dpToPx(50));
+		    			hourBig.setHeight((int)dpToPx(50));
+		    			hourBig.setWidth((int)dpToPx(50));
+		    			hourBig.setTextColor(Color.BLACK);
+		    			hourBig.setGravity(Gravity.CENTER);
 		    			hourBig.setBackgroundDrawable(shape);
 		    			hourConteiner.addView(hourBig, 1);
 		    			hourPlus.setVisibility(View.INVISIBLE);
@@ -313,8 +321,10 @@ public class CustomTimePickerDialog implements OnClickListener, android.view.Vie
 		    				hourSmall[i].setText(forHourSmall+"");
 		    				hourSmall[i].setOnTouchListener(mGestureListener);
 		    				hourSmall[i].setTextSize(25);
-		    				hourSmall[i].setHeight(dpToPx(50));
-		    				hourSmall[i].setWidth(dpToPx(50));
+		    				hourSmall[i].setGravity(Gravity.CENTER);
+		    				hourSmall[i].setHeight((int)dpToPx(50));
+		    				hourSmall[i].setWidth((int)dpToPx(50));
+		    				hourSmall[i].setTextColor(Color.BLACK);
 		    				hourSmall[i].setBackgroundDrawable(shape);
 		    				hourConteiner.addView(hourSmall[i],i+3);
 		    			    if (forHourSmall == 0){
@@ -331,19 +341,17 @@ public class CustomTimePickerDialog implements OnClickListener, android.view.Vie
 		    			checker = true;
 		    		}  
 		    		int diff =(int) (mScroller.getCurrY()-mLastScroll);
-		    		
+		    		Log.v("mScroller", mScroller.getCurrY()+"");
 		    		if (diff >= LastDiff) {
 		    			Scroll=8;
 		    		} else {
 		    			Scroll=-8;
 		    		}
-		    		setText+=Scroll;
-		    		Log.v("mScroller", mScroller.getCurrY()+"");
-		    		Log.v("setText", setText+"");
-		    		Log.v("diff", diff+"");
-		    		Log.v("mLastdiff", LastDiff+"");
+		    		setText=hourConteiner.getScrollY();
 		    		hourConteiner.scrollBy(0, Scroll);
+		    		Log.v("hour", hourConteiner.getScrollY()+"");
 		    		LastDiff = diff;
+		    		mScroller.computeScrollOffset();
 		    		return true;
 		    	}
 		    	
@@ -419,9 +427,9 @@ public class CustomTimePickerDialog implements OnClickListener, android.view.Vie
 		
 	}
 	
-	public int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = dialog.getContext().getResources().getDisplayMetrics();
-        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));       
+	public float dpToPx(int dp) {
+		Resources r = dialog.getContext().getResources();
+		float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
         return px;
     }
 	
@@ -454,5 +462,19 @@ public class CustomTimePickerDialog implements OnClickListener, android.view.Vie
 		checker = false;
 	}
 	
+	public void isPressedButton() {
+		if (hourPlus.isPressed()) {
+			hourPlus.setPressed(false);
+		}
+		if (hourMinus.isPressed()) {
+			hourMinus.setPressed(false);
+		}
+		if (minutePlus.isPressed()) {
+			minutePlus.setPressed(false);
+		}
+		if (minuteMinus.isPressed()) {
+			minuteMinus.setPressed(false);
+		}
+	}
 
 }

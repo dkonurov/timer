@@ -23,7 +23,7 @@
         		android:scrollbarStyle="insideOverlay"
         		android:isScrollContainer="true"
         		android:scrollbarSize="3dp"
-        		android:layout_height="150dp"
+        		android:layout_height="152dp"
         		android:layout_margin="5dp"
         		android:gravity="center"
         		android:orientation="vertical" >
