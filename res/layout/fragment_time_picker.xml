@@ -16,22 +16,18 @@
     		android:gravity="center"
     		android:baselineAligned="true"
     		android:orientation="horizontal">
+    		<LinearLayout
+    		    android:id="@+id/indent"
+    		    android:layout_width="5dp"
+    		    android:layout_height="150dp"
+    		    android:gravity="center"
+    		    android:orientation="vertical"
+    		    ></LinearLayout>
     		
-        	<ScrollView
-        		android:id="@+id/hours_conteiner"
-        		android:layout_width="wrap_content"
-        		android:scrollbarStyle="insideOverlay"
-        		android:isScrollContainer="true"
-        		android:scrollbarSize="3dp"
-        		android:layout_height="152dp"
-        		android:layout_margin="5dp"
-        		android:gravity="center"
-        		android:orientation="vertical" >
-        		
         	    <LinearLayout
         	        android:id="@+id/hours_scroll"
         	        android:layout_width="wrap_content"
-        	        android:layout_height="wrap_content"
+        	        android:layout_height="152dp"
         	        android:isScrollContainer="true"
         	        android:gravity="center"
         	        android:orientation="vertical" >
@@ -61,9 +57,8 @@
 			            android:layout_height="50dp"       
 			            android:background="@drawable/button_down_selector" />
 		        </LinearLayout>
-		    </ScrollView>
 		    <LinearLayout
-		        android:id="@+id/minute_container"
+		        android:id="@+id/minute_scroll"
 		        android:layout_width="wrap_content"
 		        android:layout_height="150dp"
 		        android:layout_margin="5dp"
