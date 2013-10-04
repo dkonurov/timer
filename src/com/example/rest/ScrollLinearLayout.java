@@ -153,7 +153,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 				final VelocityTracker velocityTracker = mVelocityTracker;
 				velocityTracker.computeCurrentVelocity(1000);
 				int initialVelocity = (int) velocityTracker.getYVelocity();
-				
 				fling(-initialVelocity);
 		}
 		return false;
