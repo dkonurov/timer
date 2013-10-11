@@ -20,7 +20,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract.Colors;
-import android.support.v4.view.MotionEventCompat;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.DisplayMetrics;
