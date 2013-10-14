@@ -48,9 +48,11 @@ public abstract class onTimePickerListener implements OnKeyListener, OnFocusChan
 	@Override
 	public boolean onLongClick(View arg0) {
 		// TODO Auto-generated method stub
-		focusableTouch(true);
-		InputMethodManager inputMethodManager = (InputMethodManager) getDialogInput();
-		inputMethodManager.toggleSoftInputFromWindow(getViewIBinder(), InputMethodManager.SHOW_FORCED,0);
+		if (!check()){
+			focusableTouch(true);
+			InputMethodManager inputMethodManager = (InputMethodManager) getDialogInput();
+			inputMethodManager.toggleSoftInputFromWindow(getViewIBinder(), InputMethodManager.SHOW_FORCED,0);
+		}
 		return false;
 	}
 
@@ -65,4 +67,6 @@ public abstract class onTimePickerListener implements OnKeyListener, OnFocusChan
 	abstract public void focusable(boolean seter);
 	
 	abstract void focusableTouch(boolean seter);
+	
+	abstract boolean check();
 }

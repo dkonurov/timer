@@ -3,7 +3,9 @@ package com.example.rest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.text.InputType;
@@ -26,7 +28,21 @@ import android.view.View.OnTouchListener;
 @SuppressLint("NewApi")
 public class ScrollLinearLayout extends LinearLayout implements OnClickListener,OnTouchListener{
 	
+	final private Drawable shapeTimer;
+	
+	final private int HeightView = (int) dpToPx(50);
+	final private int WidthView = (int) dpToPx(50);
+	final private LayoutParams layoutParams = new LayoutParams(WidthView, HeightView), FakeParams = new LayoutParams(0,0);
+	final private int TextSize = 25;
+	final private int indent = (int) dpToPx(10);
+	
+	private static final int plusId = -1;
+	private static final int pickerId = -2;
+	private static final int minusId = -3;
+	
 	private Scroller mScroller;
+	
+	private EditText pickerForScroll[] = new EditText[4];
 	
 	private Button plus;
 	
@@ -41,23 +57,18 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 	private int time;
 	private int maxTime;
 	
-	private int mLastY, mScrollY, y, diffY;
+	private int mLastY, mScrollY, y, diffY, saveScroll;
 	
-	private int setId, setIntPlus, setIntMinus;
+	private int setIdPlus = plusId + 1, setIdMinus = minusId -1
+			, setIntPlus, setIntMinus;
 	
-	private boolean checkerDiffY = false, checker = true;
+	private int setPlusPos = HeightView/2, setMinusPos = HeightView/2;
 	
-	final private Drawable shapeTimer;
+	private int initialVelocity = 0;
 	
-	final private int HeightView = (int) dpToPx(50);
-	final private int WidthView = (int) dpToPx(50);
-	final private LayoutParams layoutParams = new LayoutParams(WidthView, HeightView);
-	final private int TextSize = 25;
-	final private int indent = (int) dpToPx(10);
+	private boolean checkerDiffY = false, checker = true, once = true;
 	
-	private static final int plusId = -1;
-	private static final int pickerId = -2;
-	private static final int minusId = -3;
+
 	
 
 	public ScrollLinearLayout(final Context Context, Integer Time, Integer MaxTime) {
@@ -65,6 +76,9 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		mScroller = new Scroller(Context);
 		setGravity(Gravity.CENTER);
 		setOrientation(VERTICAL);
+		setScrollContainer(true);
+		setWillNotDraw(false);
+		setWillNotCacheDrawing(false);
 		setOverScrollMode(OVER_SCROLL_ALWAYS);
 		setLayoutParams(new LayoutParams(WidthView+indent, 3*HeightView));
 		
@@ -81,7 +95,9 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		plus.setId(plusId);
 		plus.setOnClickListener(this);
 		plus.setOnTouchListener(this);
-		
+		plus.setTextSize(TextSize);
+		plus.setTextColor(Color.BLACK);
+		plus.setBackgroundResource(R.anim.change_drawable_up);
 		picker = new EditText(Context);
 		picker.setLayoutParams(layoutParams);
 		//picker.setHeight((int) dpToPx(HeightView));
@@ -134,6 +150,12 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 				picker.setFocusableInTouchMode(seter);
 				picker.setFocusable(seter);
 			}
+
+			@Override
+			boolean check() {
+				// TODO Auto-generated method stub
+				return checkerDiffY;
+			}
 			
 		};
 		picker.setOnLongClickListener(pickerListener);
@@ -150,6 +172,9 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		minus.setId(minusId);
 		minus.setOnClickListener(this);
 		minus.setOnTouchListener(this);
+		minus.setTextSize(TextSize);
+		minus.setTextColor(Color.BLACK);
+		minus.setBackgroundResource(R.anim.change_drawable_up);
 		
 		addView(plus, plusId);
 		addView(picker, pickerId);
@@ -197,7 +222,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 				return false;
 			case MotionEvent.ACTION_MOVE:
 				diffY = y - (int) event.getRawY();
-				Log.v("diffY", diffY+"");
 				if(Math.abs(diffY)>3) {
 					checkerDiffY = true;
 				}
@@ -205,96 +229,88 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 					mScrollY = diffY - mLastY;
 					mLastY = diffY;
 					
-					removeView(plus);
-					removeView(minus);
-					
-					EditText pickerForScroll[] = new EditText[4];
-					for(int i = 0; i < 4; i++) {
-						pickerForScroll[i] = new EditText(getContext());
-						pickerForScroll[i].setLayoutParams(layoutParams);
-						pickerForScroll[i].setBackgroundDrawable(shapeTimer);
-						pickerForScroll[i].setTextSize(TextSize);
-						pickerForScroll[i].setGravity(Gravity.CENTER);
-						pickerForScroll[i].setTextColor(Color.BLACK);
-						if (i % 2 == 0) {
-							setIntPlus = plusTime(setIntPlus);
-							pickerForScroll[i].setText(setIntPlus+"");
-							setId = plusId+1;
-							addView(pickerForScroll[i],setId);
-						} else {
-							setIntMinus = minusTime(setIntMinus);
-							pickerForScroll[i].setText(setIntMinus+"");
-							setId = minusId - 1;
-							addView(pickerForScroll[i],setId);
+					 
+					 if (once) {
+						 
+						 AnimationDrawable frameAnimation = (AnimationDrawable) plus.getBackground();
+						 frameAnimation.start();
+						 setIntPlus = plusTime(setIntPlus);
+						 plus.setText(setIntPlus+"");
+						 
+						 frameAnimation = (AnimationDrawable) minus.getBackground();
+						 frameAnimation.start();
+						 setIntMinus = minusTime(setIntMinus);
+						 minus.setText(setIntMinus+"");
+						 
+						for(int i = 0; i < 2; i++) {
+							pickerForScroll[i] = new EditText(getContext());
+							pickerForScroll[i].setLayoutParams(layoutParams);
+							pickerForScroll[i].setBackgroundDrawable(shapeTimer);
+							pickerForScroll[i].setFocusable(false);
+							pickerForScroll[i].setTextSize(TextSize);
+							pickerForScroll[i].setGravity(Gravity.CENTER);
+							pickerForScroll[i].setTextColor(Color.BLACK);
+							pickerForScroll[i].setOnTouchListener(this);
+							if (i % 2 == 0) {
+								setIntPlus = plusTime(setIntPlus);
+								pickerForScroll[i].setText(setIntPlus+"");
+								addView(pickerForScroll[i],setIdPlus);
+							} else {
+								setIntMinus = minusTime(setIntMinus);
+								pickerForScroll[i].setText(setIntMinus+"");
+								addView(pickerForScroll[i],setIdMinus);
+							}
 						}
+						once = false;
 					}
-					
-					EditText pickerBig = new EditText(getContext());
-					pickerBig.setLayoutParams(layoutParams);
-					pickerBig.setBackgroundDrawable(shapeTimer);
-					pickerBig.setGravity(Gravity.CENTER);
-					pickerBig.setTextSize(TextSize);
-					pickerBig.setTextColor(Color.BLACK);
-					
-					if(Math.abs(diffY)%HeightView==0) {
-						if (mScrollY < 0) {
+					 EditText scrollEditText = new EditText(getContext());
+					 scrollEditText.setLayoutParams(layoutParams);
+					 scrollEditText.setBackgroundDrawable(shapeTimer);
+					 scrollEditText.setFocusable(false);
+					 scrollEditText.setTextSize(TextSize);
+					 scrollEditText.setGravity(Gravity.CENTER);
+					 scrollEditText.setTextColor(Color.BLACK);
+					 scrollEditText.setOnTouchListener(this);
+					if(diffY<0 && -diffY>=setPlusPos) {
 							setIntPlus = plusTime(setIntPlus);
-							setId = plusId+1;
-							pickerBig.setText(setIntPlus+"");
-							addView(pickerBig,setId, new LayoutParams(0,0));
+							scrollEditText.setText(setIntPlus+"");
+							addView(scrollEditText,setIdPlus, layoutParams);
+							scrollBy(0,HeightView/2);
+							setPlusPos += HeightView/2;
 						} 
-						if (mScrollY > 0) {
+						if (diffY > 0 && diffY>=setMinusPos) {
 							setIntMinus = minusTime(setIntMinus);
-							setId  = minusId-1;
-							pickerBig.setText(setIntMinus+"");
-							addView(pickerBig,setId, new LayoutParams(0,0));
+							scrollEditText.setText(setIntMinus+"");
+							addView(scrollEditText,setIdMinus);
+							scrollBy(0,-HeightView/2);
+							setMinusPos += HeightView/2;
 						}
-					}
-					
-				}
 					
 					scrollBy(0,mScrollY);
-					
+					saveScroll += mScrollY;
+				}
 					
 				return true;
 			case MotionEvent.ACTION_UP:
-				double scrollY = (double) getScrollY()/HeightView;
-				int seter = returnTrueTime(scrollY);
-				setText(seter,picker);
-				CleanAll();
-				mLastY = 0;
 				final VelocityTracker velocityTracker = mVelocityTracker;
-				velocityTracker.computeCurrentVelocity(1000);
-				int initialVelocity = (int) velocityTracker.getYVelocity();
-				
-				fling(-initialVelocity);
+				velocityTracker.computeCurrentVelocity(100);
+				initialVelocity = (int) velocityTracker.getYVelocity();
+				scrollBy(0,initialVelocity);
+				endScroll();
 				if(checkerDiffY) {
 					checkerDiffY = false;
+					once = true;
+					saveScroll = 0;
 					return true;
+					
 				}
 		}
 		return false;
 	}
-	/*
-	@Override
-	public void computeScroll() {
-		if(mScroller.computeScrollOffset()) {
-			mScrollY = mScroller.getCurrY();
-			Log.v("fsdf", mScrollY+"");
-			super.scrollBy(0,mScrollY);
-			postInvalidate();
-		}
+	protected void onDetachedFromWindow () {
+		Log.v("it's how", "it's true");
 	}
-	*/
-	private void fling(int velocityY) {
-		mScroller.fling(0, mScrollY, 0, velocityY, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
-		invalidate();
-	}
-	
-	public void setOnScrollListener(OnScrollListener l) {
-		listener = l;
-	}
-	
+		
 	public float dpToPx(int dp) {
 		Resources r = getContext().getResources();
 		float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
@@ -338,10 +354,10 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		if(seter > 0 && seter % 1 < 0.5) {
 			result = (int) seter;
 		}
-		if(seter <= 0 && seter % 1 >= 0.5) {
-			result = (int) seter-1;
+		if(seter <= 0 && seter % 1 >= -0.5) {
+			result = (int) seter;
 		} 
-		if (seter < 0 && seter % 1 < 0.5) {
+		if (seter < 0 && seter % 1 < -0.5) {
 			result = (int) seter-1;
 		}
 		return result;
@@ -383,5 +399,16 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		if (minus.isPressed()) {
 			minus.setPressed(false);
 		}
+	}
+	
+	public void endScroll () {
+		double scrollY = (double) saveScroll/HeightView;
+		Log.v("scrollY",scrollY+"");
+		int seter = returnTrueTime(scrollY);
+		Log.v("seter", seter+"");
+		setText(seter,picker);
+		CleanAll();
+		isPressedButton();
+		mLastY = 0;
 	}
 }
