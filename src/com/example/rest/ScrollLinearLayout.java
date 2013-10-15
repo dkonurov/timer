@@ -1,5 +1,9 @@
 package com.example.rest;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -7,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.text.InputType;
 import android.util.Log;
@@ -28,7 +33,7 @@ import android.view.View.OnTouchListener;
 @SuppressLint("NewApi")
 public class ScrollLinearLayout extends LinearLayout implements OnClickListener,OnTouchListener{
 	
-	final private Drawable shapeTimer;
+	final private Drawable shapeTimer, plusShape, minusShape;
 	
 	final private int HeightView = (int) dpToPx(50);
 	final private int WidthView = (int) dpToPx(50);
@@ -46,7 +51,11 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 	
 	private Button plus;
 	
+	private AnimationDrawable frameAnimationUp, frameAnimationDown;
+	
 	private Button minus;
+	
+	private CountDownTimer timerStopScroll;
 	
 	private EditText picker;
 	
@@ -66,7 +75,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 	
 	private int initialVelocity = 0;
 	
-	private boolean checkerDiffY = false, checker = true, once = true;
+	private boolean checkerDiffY = false, checker = true, once = true, checkEndScroll = false;
 	
 
 	
@@ -89,7 +98,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		
 		plus = new Button(Context);
 		plus.setLayoutParams(layoutParams);
-		Drawable plusShape = getContext().getResources().getDrawable(R.drawable.button_up_selector);
+		plusShape = getContext().getResources().getDrawable(R.drawable.button_up_selector);
 		plus.setGravity(Gravity.CENTER);
 		plus.setBackgroundDrawable(plusShape);
 		plus.setId(plusId);
@@ -166,7 +175,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		minus.setLayoutParams(layoutParams);
 		//minus.setHeight((int) dpToPx(HeightView));
 		//minus.setWidth((int) dpToPx(WidthView));
-		Drawable minusShape = getContext().getResources().getDrawable(R.drawable.button_down_selector);
+		minusShape = getContext().getResources().getDrawable(R.drawable.button_down_selector);
 		minus.setGravity(Gravity.CENTER);
 		minus.setBackgroundDrawable(minusShape);
 		minus.setId(minusId);
@@ -174,7 +183,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		minus.setOnTouchListener(this);
 		minus.setTextSize(TextSize);
 		minus.setTextColor(Color.BLACK);
-		minus.setBackgroundResource(R.anim.change_drawable_up);
+		minus.setBackgroundResource(R.anim.change_drawable_down);
 		
 		addView(plus, plusId);
 		addView(picker, pickerId);
@@ -232,13 +241,13 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 					 
 					 if (once) {
 						 
-						 AnimationDrawable frameAnimation = (AnimationDrawable) plus.getBackground();
-						 frameAnimation.start();
+						 frameAnimationUp = (AnimationDrawable) plus.getBackground();
+						 frameAnimationUp.start();
 						 setIntPlus = plusTime(setIntPlus);
 						 plus.setText(setIntPlus+"");
 						 
-						 frameAnimation = (AnimationDrawable) minus.getBackground();
-						 frameAnimation.start();
+						 frameAnimationDown = (AnimationDrawable) minus.getBackground();
+						 frameAnimationDown.start();
 						 setIntMinus = minusTime(setIntMinus);
 						 minus.setText(setIntMinus+"");
 						 
@@ -296,19 +305,44 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 				velocityTracker.computeCurrentVelocity(100);
 				initialVelocity = (int) velocityTracker.getYVelocity();
 				scrollBy(0,initialVelocity);
-				endScroll();
 				if(checkerDiffY) {
-					checkerDiffY = false;
-					once = true;
-					saveScroll = 0;
+					if (checkEndScroll) {
+						timerStopScroll.cancel();
+					}
+					timerStopScroll = new CountDownTimer(5000,100) {
+
+						@Override
+						public void onFinish() {
+							// TODO Auto-generated method stub
+							endScroll();
+							plus.setBackgroundDrawable(plusShape);
+							minus.setBackgroundDrawable(minusShape);
+							plus.setText("");
+							minus.setText("");
+							plus.setBackgroundResource(R.anim.change_drawable_up);
+							minus.setBackgroundResource(R.anim.change_drawable_down);
+							setPlusPos = HeightView/2;
+							setMinusPos = HeightView/2;
+							checkerDiffY = false;
+							once = true;
+							saveScroll = 0;
+							checkEndScroll = false;
+						}
+
+						@Override
+						public void onTick(long arg0) {
+							// TODO Auto-generated method stub
+							Log.v("Log", arg0+"");
+						}
+						
+					};
+					checkEndScroll = true;
+					timerStopScroll.start();
 					return true;
-					
 				}
+				
 		}
 		return false;
-	}
-	protected void onDetachedFromWindow () {
-		Log.v("it's how", "it's true");
 	}
 		
 	public float dpToPx(int dp) {
