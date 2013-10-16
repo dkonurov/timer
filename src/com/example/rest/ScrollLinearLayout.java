@@ -211,18 +211,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 	
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		final int action = event.getAction();
-		if (action == MotionEvent.ACTION_DOWN) {
-			if (!mScroller.isFinished()) {
-				mScroller.abortAnimation();
-			}
-		}
-		
-		if(mVelocityTracker == null) {
-			mVelocityTracker = VelocityTracker.obtain();
-		}
-		mVelocityTracker.addMovement(event);
-		
+		final int action = event.getAction();	
 		switch(action) {
 			case MotionEvent.ACTION_DOWN:
 				y = (int) event.getRawY();
@@ -301,11 +290,12 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 					
 				return true;
 			case MotionEvent.ACTION_UP:
-				final VelocityTracker velocityTracker = mVelocityTracker;
-				velocityTracker.computeCurrentVelocity(100);
-				initialVelocity = (int) velocityTracker.getYVelocity();
-				scrollBy(0,initialVelocity);
+				//final VelocityTracker velocityTracker = mVelocityTracker;
+				//velocityTracker.computeCurrentVelocity(100);
+				//initialVelocity = (int) velocityTracker.getYVelocity();
+				//scrollBy(0,initialVelocity);
 				if(checkerDiffY) {
+					correctedScroll();
 					if (checkEndScroll) {
 						timerStopScroll.cancel();
 					}
@@ -332,7 +322,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 						@Override
 						public void onTick(long arg0) {
 							// TODO Auto-generated method stub
-							Log.v("Log", arg0+"");
 						}
 						
 					};
@@ -437,12 +426,26 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 	
 	public void endScroll () {
 		double scrollY = (double) saveScroll/HeightView;
-		Log.v("scrollY",scrollY+"");
 		int seter = returnTrueTime(scrollY);
-		Log.v("seter", seter+"");
 		setText(seter,picker);
 		CleanAll();
 		isPressedButton();
 		mLastY = 0;
+	}
+	
+	public void correctedScroll() {
+		int finder = (int) saveScroll%(HeightView-1);
+		Log.v("saveScroll", saveScroll+"");
+		if (Math.abs(finder)<(HeightView-1)/2) {
+			finder *= -1;
+		} else {
+			int seter = (HeightView-1) - Math.abs(finder);
+			if (finder < 0) {
+				finder = seter*-1;
+			} else {
+				finder = seter;
+			}
+		}
+		scrollBy(0,finder);
 	}
 }
