@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
@@ -66,10 +67,10 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 	private int time;
 	private int maxTime;
 	
-	private int mLastY, mScrollY, y, diffY, saveScroll;
+	private int mLastY, mScrollY, y, diffY, saveScroll, saveScrollPos = 0;
 	
 	private int setIdPlus = plusId + 1, setIdMinus = minusId -1
-			, setIntPlus, setIntMinus;
+			, setIntPlus = 0, setIntMinus = 0;
 	
 	private int setPlusPos = HeightView/2, setMinusPos = HeightView/2;
 	
@@ -215,8 +216,10 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		switch(action) {
 			case MotionEvent.ACTION_DOWN:
 				y = (int) event.getRawY();
-				setIntPlus = time;
-				setIntMinus = time;
+				if (setIntPlus == 0 && setIntMinus == 0) {
+					setIntPlus = time;
+					setIntMinus = time;
+				}
 				return false;
 			case MotionEvent.ACTION_MOVE:
 				diffY = y - (int) event.getRawY();
@@ -229,7 +232,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 					
 					 
 					 if (once) {
-						 
+
 						 frameAnimationUp = (AnimationDrawable) plus.getBackground();
 						 frameAnimationUp.start();
 						 setIntPlus = plusTime(setIntPlus);
@@ -261,7 +264,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 						}
 						once = false;
 					}
-					 EditText scrollEditText = new EditText(getContext());
+					 TextView scrollEditText = new EditText(getContext());
 					 scrollEditText.setLayoutParams(layoutParams);
 					 scrollEditText.setBackgroundDrawable(shapeTimer);
 					 scrollEditText.setFocusable(false);
@@ -269,21 +272,21 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 					 scrollEditText.setGravity(Gravity.CENTER);
 					 scrollEditText.setTextColor(Color.BLACK);
 					 scrollEditText.setOnTouchListener(this);
-					if(diffY<0 && -diffY>=setPlusPos) {
+					if(diffY<0 && -(diffY+saveScrollPos)>=setPlusPos) {
 							setIntPlus = plusTime(setIntPlus);
 							scrollEditText.setText(setIntPlus+"");
 							addView(scrollEditText,setIdPlus, layoutParams);
 							scrollBy(0,HeightView/2);
 							setPlusPos += HeightView/2;
 						} 
-						if (diffY > 0 && diffY>=setMinusPos) {
+						if (diffY > 0 && (diffY+saveScrollPos)>=setMinusPos) {
 							setIntMinus = minusTime(setIntMinus);
 							scrollEditText.setText(setIntMinus+"");
 							addView(scrollEditText,setIdMinus);
 							scrollBy(0,-HeightView/2);
 							setMinusPos += HeightView/2;
 						}
-					
+
 					scrollBy(0,mScrollY);
 					saveScroll += mScrollY;
 				}
@@ -295,6 +298,9 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 				//initialVelocity = (int) velocityTracker.getYVelocity();
 				//scrollBy(0,initialVelocity);
 				if(checkerDiffY) {
+					Log.v("diffY", diffY+"");
+					mLastY = 0;
+					saveScrollPos += diffY;
 					correctedScroll();
 					if (checkEndScroll) {
 						timerStopScroll.cancel();
@@ -427,25 +433,29 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 	public void endScroll () {
 		double scrollY = (double) saveScroll/HeightView;
 		int seter = returnTrueTime(scrollY);
+		saveScrollPos = 0;
+		setIntPlus = 0;
+		setIntMinus = 0;
 		setText(seter,picker);
 		CleanAll();
 		isPressedButton();
-		mLastY = 0;
 	}
 	
 	public void correctedScroll() {
-		int finder = (int) saveScroll%(HeightView-1);
-		Log.v("saveScroll", saveScroll+"");
-		if (Math.abs(finder)<(HeightView-1)/2) {
+		int indent = HeightView - 1;
+		int finder = (int) saveScroll%(indent);
+		int absFinder = Math.abs(finder);
+		if (absFinder<indent/2) {
 			finder *= -1;
 		} else {
-			int seter = (HeightView-1) - Math.abs(finder);
+			int seter = indent - absFinder;
 			if (finder < 0) {
 				finder = seter*-1;
 			} else {
 				finder = seter;
 			}
 		}
+		saveScroll += finder;
 		scrollBy(0,finder);
 	}
 }
