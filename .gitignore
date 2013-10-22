@@ -1,3 +1,27 @@
+/.idea/.name
+/.idea/compiler.xml
+/.idea/copyright/profiles_settings.xml
+/.idea/encodings.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/scopes/scope_settings.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
+/out/res-cache/timer/drawable-hdpi/ic_launcher.png
+/out/res-cache/timer/drawable-mdpi/ic_launcher.png
+/out/res-cache/timer/drawable-xhdpi/ic_launcher.png
+/out/res-cache/timer/drawable-xxhdpi/ic_launcher.png
+/out/res-cache/timer/drawable/button_blue.9.png
+/out/res-cache/timer/drawable/button_blue_pressed.9.png
+/out/res-cache/timer/drawable/button_down.png
+/out/res-cache/timer/drawable/button_down_pressed.png
+/out/res-cache/timer/drawable/button_red.9.png
+/out/res-cache/timer/drawable/button_red_pressed.9.png
+/out/res-cache/timer/drawable/button_up.png
+/out/res-cache/timer/drawable/button_up_pressed.png
+/out/res-cache/timer/drawable/checkbox_pressed.9.png
+/out/res-cache/timer/drawable/checkbox_selected.9.png
+/out/res-cache/timer/drawable/timer_border.9.png
 /libs/android-support-v4.jar
 # built application files
 *.apk

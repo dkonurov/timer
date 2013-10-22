@@ -47,6 +47,9 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 	private static final int minusId = -3;
 	
 	private Scroller mScroller;
+
+    private Integer[] indentPizdec = {75,74,73,75};
+
 	
 	private EditText pickerForScroll[] = new EditText[4];
 	
@@ -66,6 +69,8 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 	
 	private int time;
 	private int maxTime;
+
+    private int indentScroll;
 	
 	private int mLastY, mScrollY, y, diffY, saveScroll, saveScrollPos = 0;
 	
@@ -202,10 +207,14 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 			case plusId:
 				time = plusTime(time);
 				picker.setText(time+"");
+                setIntPlus = 0;
+                setIntMinus = 0;
 				break;
 			case minusId:
 				time = minusTime(time);
 				picker.setText(time+"");
+                setIntPlus = 0;
+                setIntMinus = 0;
 				break;
 		}
 	}
@@ -289,6 +298,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 
 					scrollBy(0,mScrollY);
 					saveScroll += mScrollY;
+                    Log.v("saveScroll_first", saveScroll+"");
 				}
 					
 				return true;
@@ -370,10 +380,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		}
 		return nowTime;
 	}
-	
-	public interface OnScrollListener {
-		public void onScroll(long x);
-	}
 
 	public int returnTrueTime(double seter) {
 		int result = 0;
@@ -392,7 +398,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		return result;
 	}
 
-	public void setText(int set, EditText timer) {
+	private void setText(int set, EditText timer, boolean check) {
 		for (int i=0, length = Math.abs(set); i<length; i++) {
 			if(set>0){
 				if(time == 0) {
@@ -408,10 +414,12 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 				}
 			}
 		}
+        if (check) {
 		timer.setText(time+"");
+        }
 	}
 	
-	public void CleanAll() {
+	private void CleanAll() {
 		scrollTo(0,0);
 		removeAllViews();
 		picker.setText(time+"");
@@ -421,7 +429,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		
 	}
 	
-	public void isPressedButton() {
+	private void isPressedButton() {
 		if (plus.isPressed()) {
 			plus.setPressed(false);
 		}
@@ -430,32 +438,46 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 		}
 	}
 	
-	public void endScroll () {
+	private void endScroll () {
 		double scrollY = (double) saveScroll/HeightView;
+        Log.v("ScrollY", scrollY+"");
 		int seter = returnTrueTime(scrollY);
 		saveScrollPos = 0;
 		setIntPlus = 0;
 		setIntMinus = 0;
-		setText(seter,picker);
+        if (checker){
+		    setText(seter,picker, true);
+        }
 		CleanAll();
 		isPressedButton();
+        checker = true;
 	}
 	
-	public void correctedScroll() {
-		int indent = HeightView - 1;
-		int finder = (int) saveScroll%(indent);
-		int absFinder = Math.abs(finder);
-		if (absFinder<indent/2) {
-			finder *= -1;
-		} else {
-			int seter = indent - absFinder;
-			if (finder < 0) {
-				finder = seter*-1;
-			} else {
-				finder = seter;
-			}
-		}
-		saveScroll += finder;
-		scrollBy(0,finder);
+	private void correctedScroll() {
+        int indent = HeightView - 1;
+        int finder = (int) saveScroll%(indent);
+        int absFinder = Math.abs(finder);
+        if (absFinder<indent/2) {
+            finder *= -1;
+        } else {
+            int seter = indent - absFinder;
+            if (finder < 0) {
+                finder = seter*-1;
+            } else {
+                finder = seter;
+            }
+        }
+        saveScroll += finder;
+        scrollBy(0,finder);
+        double ScrollY = (double) saveScroll/HeightView;
+        int seter = returnTrueTime(ScrollY);
+        setText(seter, picker, false);
+        Log.v("time", time+"");
+        saveScroll = 0;
+        checker = false;
 	}
+
+    public Integer getTime () {
+       return time;
+    }
 }

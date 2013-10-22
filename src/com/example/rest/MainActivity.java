@@ -259,64 +259,22 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 				}
 				break;
 			case R.id.startHours:
-				count=START_TIME;
-				if(timer[count].getText().length() != 0) {
-					setHour = Integer.valueOf(timer[count].getText().toString());
-				}
-				if (timer[count+1].getText().length() != 0) {
-					setMinute = Integer.valueOf(timer[count+1].getText().toString());
-				}
-				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);
+				showDialog(START_TIME);
 				break;
 			case R.id.startMinute:
-				count = START_TIME;
-				if(timer[count].getText().length() != 0) {
-					setHour = Integer.valueOf(timer[count].getText().toString());
-				}
-				if (timer[count+1].getText().length() != 0) {
-					setMinute = Integer.valueOf(timer[count+1].getText().toString());
-				}
-				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);				
+				showDialog(START_TIME);
 				break;
 			case R.id.endHours:
-				count = END_TIME;
-				if(timer[count].getText().length() != 0) {
-					setHour = Integer.valueOf(timer[count].getText().toString());
-				}
-				if (timer[count+1].getText().length() != 0) {
-					setMinute = Integer.valueOf(timer[count+1].getText().toString());
-				}
-				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);
+				showDialog(END_TIME);
 				break;
 			case R.id.endMinute:
-				count = END_TIME;
-				if(timer[count].getText().length() != 0) {
-					setHour = Integer.valueOf(timer[count].getText().toString());
-				}
-				if (timer[count+1].getText().length() != 0) {
-					setMinute = Integer.valueOf(timer[count+1].getText().toString());
-				}
-				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], setHour, setMinute);
+				showDialog(END_TIME);
 				break;
 			case 4:
-				count = PERIODIC_TIME;
-				if(timer[count].getText().length() != 0) {
-					periodicHour = Integer.valueOf(timer[count].getText().toString());
-				}
-				if (timer[count+1].getText().length() != 0) {
-					periodicMinute = Integer.valueOf(timer[count+1].getText().toString());
-				}
-				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], periodicHour, periodicMinute);
+				showDialog(PERIODIC_TIME);
 				break;
 			case 5:
-				count = PERIODIC_TIME;
-				if(timer[count].getText().length() != 0) {
-					periodicHour = Integer.valueOf(timer[count].getText().toString());
-				}
-				if (timer[count+1].getText().length() != 0) {
-					periodicMinute = Integer.valueOf(timer[count+1].getText().toString());
-				}
-				timePicker = new CustomTimePickerDialog(context, timer[count],timer[count+1], periodicHour, periodicMinute);
+				showDialog(PERIODIC_TIME);
 				break;
 				
 		}
@@ -398,12 +356,8 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 					seterMinute = periodicMinute;
 				}
 				CustomTimePickerDialog TimePicker = new CustomTimePickerDialog(context, timer[id], timer [id+1],seterHours, seterMinute);
-				return super.onCreateDialog(id);
+				return TimePicker;
 			}
-			
-		public void startActivityForResult() {
-			
-		}
 }
 
 
