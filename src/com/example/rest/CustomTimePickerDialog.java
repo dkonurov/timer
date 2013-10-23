@@ -91,8 +91,6 @@ public class CustomTimePickerDialog extends Dialog implements View.OnClickListen
                 } else {
                     pickerMinute.setText(minute+"");
                 }
-                pickerHour.setEnabled(true);
-                pickerMinute.setEnabled(true);
                 cancel();
         }
     }
