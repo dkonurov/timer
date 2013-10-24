@@ -14,8 +14,12 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
+import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,8 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.Scroller;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-
-import static com.example.rest.R.anim.disappearance;
 
 @SuppressLint("NewApi")
 public class ScrollLinearLayout extends LinearLayout implements OnClickListener,OnTouchListener{
@@ -37,17 +39,11 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
     final private int TextSize = 25;
     final private int indent = (int) dpToPx(10);
 
-    final private Animation remove;
-    final private Animation add;
-
     private static final int plusId = -1;
     private static final int pickerId = -2;
     private static final int minusId = -3;
 
     private Scroller mScroller;
-
-    private Integer[] indentPizdec = {75,74,73,75};
-
 
     private EditText pickerForScroll[];
 
@@ -81,22 +77,21 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 
     private boolean checkerDiffY = false, checker = true, once = true, checkEndScroll = false;
 
+	private int mMinimumVelocity, touchSlop;
+
 
 
 
     public ScrollLinearLayout(final Context Context, Integer Time, Integer MaxTime) {
         super(Context);
-        mScroller = new Scroller(Context);
+        mScroller = new Scroller(getContext());
         setGravity(Gravity.CENTER);
         setOrientation(VERTICAL);
-        setScrollContainer(true);
-        setWillNotDraw(false);
-        setWillNotCacheDrawing(false);
-        setOverScrollMode(OVER_SCROLL_ALWAYS);
         setLayoutParams(new LayoutParams(WidthView+indent, 3*HeightView));
 
-        add = AnimationUtils.loadAnimation(Context, R.anim.appearance);
-        remove = AnimationUtils.loadAnimation(Context, R.anim.disappearance);
+        final ViewConfiguration configuration = ViewConfiguration.get(getContext());
+        mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
+        touchSlop = configuration.getScaledTouchSlop();
 
         time = Time;
         maxTime = MaxTime;
@@ -217,10 +212,26 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
                 break;
         }
     }
+    
+    @Override
+	public void addView(View v, int child, ViewGroup.LayoutParams params) {
+    	super.addView(v, child, params);
+    	if (child == setIdPlus) {
+    		scrollBy(0, HeightView/2);
+    	}
+    	if (child == setIdMinus) {
+    		scrollBy(0, -HeightView/2);
+    	}
+    }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         final int action = event.getAction();
+        
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
+        }
+        mVelocityTracker.addMovement(event);
         switch(action) {
             case MotionEvent.ACTION_DOWN:
                 y = (int) event.getRawY();
@@ -231,7 +242,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
                 return false;
             case MotionEvent.ACTION_MOVE:
                 diffY = y - (int) event.getRawY();
-                if(Math.abs(diffY)>3) {
+                if(Math.abs(diffY)>touchSlop) {
                     checkerDiffY = true;
                 }
                 if (checkerDiffY){
@@ -258,21 +269,16 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
                         while (-diffY >= setPlusPos) {
                             setIntPlus = plusTime(setIntPlus);
                             addView(pickerForScroll[setIntPlus],setIdPlus,layoutParams);
-                            //scrollBy(0,HeightView/2);
-                            pos += HeightView/2;
                             setPlusPos += HeightView/2;
                         }
-                        scrollBy(0,pos);
                     }
                     if (diffY>0) {
                         int pos = 0;
                         while(diffY >= setMinusPos) {
                             setIntMinus = minusTime(setIntMinus);
                             addView(pickerForScroll[setIntMinus],setIdMinus,layoutParams);
-                            pos -= HeightView/2;
                             setMinusPos +=HeightView/2;
                         }
-                        scrollBy(0,pos);
                     }
                     scrollBy(0,mScrollY);
                     saveScroll += mScrollY;
@@ -280,10 +286,11 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 
                 return true;
             case MotionEvent.ACTION_UP:
-                //final VelocityTracker velocityTracker = mVelocityTracker;
-                //velocityTracker.computeCurrentVelocity(100);
-                //initialVelocity = (int) velocityTracker.getYVelocity();
-                //scrollBy(0,initialVelocity);
+                final VelocityTracker velocityTracker = mVelocityTracker;
+                velocityTracker.computeCurrentVelocity(100);
+                initialVelocity = (int) velocityTracker.getYVelocity();
+                Log.v("initialVelocity", initialVelocity+"");
+                mScroller.fling(0, diffY, 0, -initialVelocity, 0, 0, 0, Integer.MAX_VALUE);
                 if(checkerDiffY) {
                     mLastY = 0;
                     correctedScroll();
@@ -313,7 +320,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
                         @Override
                         public void onTick(long arg0) {
                             // TODO Auto-generated method stub
-                            Log.v("arg0",arg0+"");
                             if (checkerDiffY) {
                                 cancel();
                             }
@@ -401,7 +407,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
     private void CleanAll(View first, View second, View third) {
         scrollTo(0,0);
         removeAllViews();
-        //picker.setText(time+"");
         addView(first,plusId);
         addView(second,pickerId);
         addView(third,minusId);
@@ -449,6 +454,8 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
                 finder = seter;
             }
         }
+        ScrollNewTo(finder,1000,this);
+        /*
         saveScroll += finder;
         scrollBy(0,finder);
 
@@ -456,7 +463,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
         int seter = returnTrueTime(ScrollY);
         setText(seter, picker, false);
 
-        int plusTime = plusTime(time);
+        /*int plusTime = plusTime(time);
         int minusTime = minusTime(time);
         CleanAll(pickerForScroll[plusTime], pickerForScroll[time],pickerForScroll[minusTime]);
 
@@ -464,13 +471,33 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
         setIntMinus = minusTime;
         setPlusPos = HeightView/4;
         setMinusPos = HeightView/4;
-
+		*/
         saveScroll = 0;
         checker = false;
 
     }
 
-    public Integer getTime () {
+    private void ScrollNewTo(int finder, int time,final View v) {
+    	final int step = time/finder;
+    	CountDownTimer scrolling = new CountDownTimer(time,time/finder) {
+    		final
+			@Override
+			public void onFinish() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onTick(long millisUntilFinished) {
+				// TODO Auto-generated method stub
+				v.scrollBy(0,step);
+			}
+    		
+    	};
+		
+	}
+
+	public Integer getTime () {
         return time;
     }
 
@@ -484,5 +511,14 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
         scrollEditText.setTextColor(Color.BLACK);
         scrollEditText.setOnTouchListener(this);
         return scrollEditText;
+    }
+    
+    @Override
+	public void computeScroll() {
+    	if (mScroller.computeScrollOffset()) {
+    		mScrollY = mScroller.getCurrY();
+    		Log.v("mScrollY", mScrollY+"");
+    		postInvalidate();
+    	}
     }
 }
