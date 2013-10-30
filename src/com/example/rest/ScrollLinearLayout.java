@@ -36,7 +36,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
     private static final int pickerId = -2;
     private static final int minusId = -3;
     private static final int speed = 500;
-    private static final int helpVelocity = 10;
+    private static final int helpVelocity = 5;
 
     private final int maxScroll, minScroll;
 
@@ -58,7 +58,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 
     private int initialVelocity = 0;
 
-    private boolean checkerDiffY = false, checker = true, once = true, checkEndScroll = false;
+    private boolean checkerDiffY = false, checkerCorrectedScroll = false;
 
 	private int mMinimumVelocity, touchSlop;
 
@@ -67,7 +67,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 
     public ScrollLinearLayout(final Context Context, Integer Time, Integer MaxTime) {
         super(Context);
-        mScroller = new Scroller(getContext(), new DecelerateInterpolator(2.5f));
+        mScroller = new Scroller(getContext(), new DecelerateInterpolator(10f));
         setGravity(Gravity.CENTER);
         setOrientation(VERTICAL);
         setLayoutParams(new LayoutParams(WidthView+indent, 3*HeightView));
@@ -211,12 +211,22 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
                 final VelocityTracker velocityTracker = mVelocityTracker;
                 velocityTracker.computeCurrentVelocity(100);
                 initialVelocity = (int) velocityTracker.getYVelocity();
-                initialVelocity = initialVelocity*helpVelocity;
-                mScroller.fling(0, getScrollY(), 0, -initialVelocity, 0, 0, minScroll,maxScroll);
+                if (Math.abs(initialVelocity) < mMinimumVelocity) {
+                	correctedScroll();
+                } else {
+	                initialVelocity = initialVelocity*helpVelocity;
+	                mScroller.fling(0, getScrollY(), 0, -initialVelocity, 0, 0, minScroll,maxScroll);
+	                if (initialVelocity > 0) {
+	                	scrollBy(0, -1);
+	                } else if (initialVelocity < 0) {
+	                	scrollBy(0, 1);
+	                }
+                }
             	
                 if(checkerDiffY) {
                 	
                     mLastY = 0;
+                    checkerDiffY = false;
                     return true;
                 }
 
@@ -281,10 +291,11 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
         double scrollY = (double) setScroll / HeightView;
         int seter = returnTrueTime(scrollY);
         setText(seter);
-        checker = true;
+        checkerCorrectedScroll = false;
     }
 
     private void correctedScroll() {
+    	
         int setScroll = getScrollY()-minScroll;
         Log.v("setScroll", setScroll+"");
         int finder = (int) setScroll%(HeightView);
@@ -296,18 +307,21 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
         }
         Log.v("finder", finder+"");
         if (finder != 0) {
-        	if(!mScroller.computeScrollOffset()) {
+        	if( (!mScroller.computeScrollOffset() && !checkerDiffY) || !checkerCorrectedScroll ) {
 	        	if (finder > 0) {
 	        		mScroller.fling(0, getScrollY(), 0, speed, 0, 0, getScrollY(), getScrollY()+finder);
-	        		scrollBy(0,finder/10);
+	        		scrollBy(0,1);
 	        	} else {
 	        		mScroller.fling(0, getScrollY(), 0, -speed, 0, 0, getScrollY(), getScrollY()+finder);
-	        		scrollBy(0,finder/10);
+	        		scrollBy(0,-1);
 	        	}
+        	} else {
+        		scrollBy(0,finder);
         	}
         } else {
         	endScroll();
         }
+        checkerCorrectedScroll = true;
 
     }
 
@@ -331,11 +345,16 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
     @Override
 	public void computeScroll() {
     	if (mScroller.computeScrollOffset()) {
-    		mScrollY = mScroller.getCurrY();
+    		int mScrollY = mScroller.getCurrY();
+    		if (mScrollY != getScrollY()) {
+    		Log.v("mScrollY", mScrollY+"");
     		mScrollY = mScrollY - getScrollY();
     		scrollBy(0,mScrollY);
+    		}
     	} else {
+    		if (!checkerDiffY) {
     			correctedScroll();
+    		}
     	}
     }
     
