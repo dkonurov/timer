@@ -67,7 +67,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 
     public ScrollLinearLayout(final Context Context, Integer Time, Integer MaxTime) {
         super(Context);
-        mScroller = new Scroller(getContext(), new DecelerateInterpolator(10f));
+        mScroller = new Scroller(getContext(), new DecelerateInterpolator(8f));
         setGravity(Gravity.CENTER);
         setOrientation(VERTICAL);
         setLayoutParams(new LayoutParams(WidthView+indent, 3*HeightView));
@@ -175,7 +175,10 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
     public boolean onTouch(View v, MotionEvent event) {
         final int action = event.getAction();
         
-        if (!mScroller.isFinished()) mScroller.abortAnimation();
+        if (!mScroller.isFinished())  {
+        	mScroller.abortAnimation();
+        	correctedScroll();
+        }
         
         if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();
@@ -297,7 +300,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
     private void correctedScroll() {
     	
         int setScroll = getScrollY()-minScroll;
-        Log.v("setScroll", setScroll+"");
         int finder = (int) setScroll%(HeightView);
         if (finder<HeightView/2) {
         	finder *=-1;
@@ -305,19 +307,18 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
             int seter = HeightView - finder;
             finder = seter;
         }
-        Log.v("finder", finder+"");
         if (finder != 0) {
-        	if( (!mScroller.computeScrollOffset() && !checkerDiffY) || !checkerCorrectedScroll ) {
-	        	if (finder > 0) {
-	        		mScroller.fling(0, getScrollY(), 0, speed, 0, 0, getScrollY(), getScrollY()+finder);
-	        		scrollBy(0,1);
-	        	} else {
-	        		mScroller.fling(0, getScrollY(), 0, -speed, 0, 0, getScrollY(), getScrollY()+finder);
-	        		scrollBy(0,-1);
-	        	}
-        	} else {
-        		scrollBy(0,finder);
-        	}
+	        			if (finder > 0) {
+	        				if (!checkerCorrectedScroll) {
+	        				mScroller.fling(0, getScrollY(), 0, speed, 0, 0, getScrollY(), getScrollY()+finder);
+	        				}
+		        			scrollBy(0,1);
+	        			} else {
+	        				if (!checkerCorrectedScroll) {
+	        				mScroller.fling(0, getScrollY(), 0, -speed, 0, 0, getScrollY(), getScrollY()+finder);
+	        				}
+	        				scrollBy(0,-1);
+	        		}
         } else {
         	endScroll();
         }
@@ -345,13 +346,15 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
     @Override
 	public void computeScroll() {
     	if (mScroller.computeScrollOffset()) {
-    		int mScrollY = mScroller.getCurrY();
-    		if (mScrollY != getScrollY()) {
-    		Log.v("mScrollY", mScrollY+"");
+    		mScrollY = mScroller.getCurrY();
     		mScrollY = mScrollY - getScrollY();
-    		scrollBy(0,mScrollY);
+    		if (mScrollY == 0) {
+    			correctedScroll();
+    		} else {
+    			scrollBy(0,mScrollY);
     		}
-    	} else {
+    	}
+    	if (mScroller.isFinished()) {
     		if (!checkerDiffY) {
     			correctedScroll();
     		}
@@ -363,5 +366,4 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
     		pickerForScroll[i].setText(formatter[i]);
     	}
     }
-    
 }
