@@ -228,7 +228,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
             case MotionEvent.ACTION_DOWN:
                 saveScroll -= 2*saveScrollPos;
                 y = (int) event.getRawY();
-                Log.v("y", y+"");
                 if (y == maxScroll || y == minScroll) {
                 	checkerForCircularFling = true;
                 }
@@ -264,6 +263,12 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
                 	correctedScroll();
                 } else {
 	                initialVelocity = initialVelocity*helpVelocity;
+	                if (Math.abs(initialVelocity) > 10000) {
+	                	while(Math.abs(initialVelocity) > 1000) {
+	                		initialVelocity /= 4;
+	                	}
+	                }
+	                Log.v("velocity", initialVelocity+"");
 	                fling(initialVelocity);
 	                if (!checkerForCircularFling) {
 		                if (initialVelocity > 0) {
@@ -347,6 +352,7 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
         saveScroll = 0;
         checkerCorrectedScroll = false;
         checkerForCircularFling = false;
+        saveScrollPos = 0;
     }
 
     private void correctedScroll() {
@@ -399,27 +405,25 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 	public void computeScroll() {
     	if (mScroller.computeScrollOffset()) {
     		mScrollY = mScroller.getCurrY();
-    		Log.v("setScroll", mScrollY+"");
-    		mScrollY = mScrollY - getScrollY();
+    		if (mScrollY< minScroll) {
+    			mScrollY = mScrollY - minScroll - saveScrollPos;
+    			saveScrollPos += mScrollY;
+    		} else if (mScrollY > maxScroll) {
+    			mScrollY = mScrollY - maxScroll - saveScrollPos;
+    			saveScrollPos += mScrollY;
+    		} else {
+    			mScrollY = mScrollY - getScrollY();
+    		}
     		
-    		indentScroll = minScroll;
-    		while (mScrollY - indentScroll < minScroll) {
-    			mScrollY -= 2*indentScroll;
-    		}
-    		indentScroll = maxScroll;
-    		while (mScrollY - indentScroll > maxScroll) {
-    			mScrollY -= 2*indentScroll;
-    		}
     		if (mScrollY == 0) {
-    			//correctedScroll();
+    			correctedScroll();
     		} else {
     			scrollBy(0,mScrollY);
-    			Log.v("scroll", mScrollY+"");
     		}
     	}
     	if (mScroller.isFinished()) {
     		if (!checkerDiffY) {
-    			//correctedScroll();
+    			correctedScroll();
     		}
     	}
     }
