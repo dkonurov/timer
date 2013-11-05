@@ -64,8 +64,8 @@ public class CustomTimePickerDialog extends Dialog implements View.OnClickListen
         setCanceledOnTouchOutside(true);
         getWindow().getAttributes().windowAnimations = R.style.PauseDialogAnimation;
         LinearLayout view = (LinearLayout) getLayoutInflater().inflate(R.layout.fragment_time_picker, null);
-        hourLayout = new ScrollLinearLayout(dialogContext,setHours,23);
-        minuteLayout = new ScrollLinearLayout(dialogContext, setMinute, 59);
+        hourLayout = new ScrollLinearLayout(dialogContext,setHours,23, false);
+        minuteLayout = new ScrollLinearLayout(dialogContext, setMinute, 59, true);
         LinearLayout TimePicker = (LinearLayout) view.findViewById(R.id.custom_timepicker);
         TimePicker.addView(hourLayout);
         TimePicker.addView(minuteLayout);
