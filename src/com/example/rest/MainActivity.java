@@ -158,8 +158,13 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
 			case R.id.menu_help:
-			Intent Help = new Intent(MainActivity.this, Help.class);
-			startActivity(Help);
+				Intent Help = new Intent(MainActivity.this, Help.class);
+				startActivity(Help);
+				break;
+			case R.id.menu_setting:
+				Intent Setting = new Intent(MainActivity.this, SettingActivity.class);
+				startActivity(Setting);
+				break;
 		}
 	
 		return super.onOptionsItemSelected(item);

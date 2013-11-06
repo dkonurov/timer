@@ -40,6 +40,10 @@
             android:label="@string/title_activity_help"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name="com.example.rest.SettingActivity"
+            android:label="@string/title_activity_setting" >
+        </activity>
     </application>
 
 </manifest>

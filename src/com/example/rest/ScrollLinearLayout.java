@@ -12,14 +12,13 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.OverScroller;
 import android.widget.Scroller;
-import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 
 @SuppressLint("NewApi")
 public class ScrollLinearLayout extends LinearLayout implements OnClickListener,OnTouchListener{
@@ -32,7 +31,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
     final private int TextSize = 25;
     final private int indent = (int) dpToPx(10);
 
-    private static final int plusId = -1;
     private static final int pickerId = -2;
     private static final int minusId = -3;
     private static final int speed = 500;
@@ -50,8 +48,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
 
     private int time;
     private int maxTime;
-
-    private int indentScroll = 0, saveScroll = 0;
 
     private int mLastY, mScrollY, y, diffY, saveScrollPos = 0;
 
@@ -226,7 +222,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
         mVelocityTracker.addMovement(event);
         switch(action) {
             case MotionEvent.ACTION_DOWN:
-                saveScroll -= 2*saveScrollPos;
                 y = (int) event.getRawY();
                 if (y == maxScroll || y == minScroll) {
                 	checkerForCircularFling = true;
@@ -242,7 +237,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
                     mLastY = diffY;
                     
                     scrollBy(0,mScrollY);
-                    saveScroll += mScrollY;
                 }
 
                 return true;
@@ -263,12 +257,11 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
                 	correctedScroll();
                 } else {
 	                initialVelocity = initialVelocity*helpVelocity;
-	                if (Math.abs(initialVelocity) > 10000) {
-	                	while(Math.abs(initialVelocity) > 1000) {
+	                if (Math.abs(initialVelocity) > 2000) {
+	                	while(Math.abs(initialVelocity) > 500) {
 	                		initialVelocity /= 4;
 	                	}
 	                }
-	                Log.v("velocity", initialVelocity+"");
 	                fling(initialVelocity);
 	                if (!checkerForCircularFling) {
 		                if (initialVelocity > 0) {
@@ -348,8 +341,6 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
         double scrollY = (double) setScroll / HeightView;
         int seter = returnTrueTime(scrollY);
         setText(seter);
-        indentScroll = 0;
-        saveScroll = 0;
         checkerCorrectedScroll = false;
         checkerForCircularFling = false;
         saveScrollPos = 0;
