@@ -8,6 +8,7 @@
     tools:context=".MainActivity" >
     
     
+    
 
  	<ScrollView
  	    android:id="@+id/scroll"
@@ -16,113 +17,142 @@
  	    android:animateLayoutChanges="true"
  	    android:layout_weight="1" >
  	    
- 	    <LinearLayout
- 	        android:id="@+id/scrollContent"
+ 	    <RelativeLayout android:id="@+id/setHorizontalConteiner"
  	        android:layout_width="match_parent"
- 	        android:layout_height="wrap_content"
- 	        android:orientation="vertical" >
-
- 	        <TextView
- 	            android:id="@+id/stringStart"
- 	            android:layout_width="wrap_content"
- 	            android:layout_height="wrap_content"
- 	            android:layout_gravity="center_horizontal"
- 	            android:layout_marginTop="20dp"
- 	            android:text="@string/start"
- 	            android:textColor="#000000" />
+ 	        android:layout_height="wrap_content">
 
  	        <LinearLayout
+ 	            android:id="@+id/scrollContent"
  	            android:layout_width="wrap_content"
  	            android:layout_height="wrap_content"
- 	            android:layout_gravity="top|center"
- 	            android:layout_marginTop="20dp"
- 	            android:orientation="horizontal" >
-
- 	            <EditText
- 	                android:id="@+id/startHours"
- 	                android:layout_width="50dp"
- 	                android:layout_height="wrap_content"
- 	                android:background="@drawable/text_for_timer"
- 	                android:ems="10"
- 	                android:inputType="number"
- 	                android:maxLength="2"
- 	                android:textColor="#000000" >
- 	            </EditText>
+ 	            android:layout_alignParentTop="true"
+ 	            android:layout_centerHorizontal="true"
+ 	            android:gravity="right"
+ 	            android:orientation="vertical" >
 
  	            <TextView
- 	                android:id="@+id/dotsStart"
+ 	                android:id="@+id/stringStart"
  	                android:layout_width="wrap_content"
  	                android:layout_height="wrap_content"
- 	                android:text="@string/dots"
+ 	                android:layout_gravity="center_horizontal"
+ 	                android:layout_marginTop="20dp"
+ 	                android:text="@string/start"
  	                android:textColor="#000000" />
 
- 	            <EditText
- 	                android:id="@+id/startMinute"
- 	                android:layout_width="50dp"
+ 	            <LinearLayout
+ 	                android:layout_width="wrap_content"
  	                android:layout_height="wrap_content"
- 	                android:background="@drawable/text_for_timer"
- 	                android:ems="10"
- 	                android:inputType="number"
- 	                android:maxLength="2"
+ 	                android:layout_gravity="top|center"
+ 	                android:layout_marginTop="20dp"
+ 	                android:orientation="horizontal" >
+
+ 	                <EditText
+ 	                    android:id="@+id/startHours"
+ 	                    android:layout_width="50dp"
+ 	                    android:layout_height="wrap_content"
+ 	                    android:background="@drawable/text_for_timer"
+ 	                    android:ems="10"
+ 	                    android:inputType="number"
+ 	                    android:maxLength="2"
+ 	                    android:textColor="#000000" />
+
+ 	                <TextView
+ 	                    android:id="@+id/dotsStart"
+ 	                    android:layout_width="wrap_content"
+ 	                    android:layout_height="wrap_content"
+ 	                    android:text="@string/dots"
+ 	                    android:textColor="#000000" />
+
+ 	                <EditText
+ 	                    android:id="@+id/startMinute"
+ 	                    android:layout_width="50dp"
+ 	                    android:layout_height="wrap_content"
+ 	                    android:background="@drawable/text_for_timer"
+ 	                    android:ems="10"
+ 	                    android:inputType="number"
+ 	                    android:maxLength="2"
+ 	                    android:textColor="#000000" />
+ 	            </LinearLayout>
+
+ 	            <TextView
+ 	                android:id="@+id/stringEnd"
+ 	                android:layout_width="wrap_content"
+ 	                android:layout_height="wrap_content"
+ 	                android:layout_gravity="center_horizontal"
+ 	                android:layout_marginTop="20dp"
+ 	                android:text="@string/end"
+ 	                android:textColor="#000000" />
+
+ 	            <LinearLayout
+ 	                android:layout_width="wrap_content"
+ 	                android:layout_height="wrap_content"
+ 	                android:layout_gravity="top|center"
+ 	                android:layout_marginTop="20dp"
+ 	                android:orientation="horizontal" >
+
+ 	                <EditText
+ 	                    android:id="@+id/endHours"
+ 	                    android:layout_width="50dp"
+ 	                    android:layout_height="wrap_content"
+ 	                    android:background="@drawable/text_for_timer"
+ 	                    android:ems="10"
+ 	                    android:inputType="number"
+ 	                    android:maxLength="2"
+ 	                    android:textColor="#000000" />
+
+ 	                <TextView
+ 	                    android:id="@+id/dotsEnd"
+ 	                    android:layout_width="wrap_content"
+ 	                    android:layout_height="wrap_content"
+ 	                    android:text="@string/dots"
+ 	                    android:textColor="#000000" />
+
+ 	                <EditText
+ 	                    android:id="@+id/endMinute"
+ 	                    android:layout_width="50dp"
+ 	                    android:layout_height="wrap_content"
+ 	                    android:background="@drawable/text_for_timer"
+ 	                    android:ems="10"
+ 	                    android:inputType="number"
+ 	                    android:maxLength="2"
+ 	                    android:textColor="#000000" />
+ 	            </LinearLayout>
+
+ 	            <CheckBox
+ 	                android:id="@+id/checkPeriodic"
+ 	                android:layout_width="wrap_content"
+ 	                android:layout_height="wrap_content"
+ 	                android:layout_gravity="center_horizontal"
+ 	                android:layout_marginTop="20dp"
+ 	                android:button="@drawable/button_for_checkbox"
+ 	                android:text="@string/checkBox"
  	                android:textColor="#000000" />
  	        </LinearLayout>
 
- 	        <TextView
- 	            android:id="@+id/stringEnd"
- 	            android:layout_width="wrap_content"
- 	            android:layout_height="wrap_content"
- 	            android:layout_gravity="center_horizontal"
- 	            android:layout_marginTop="20dp"
- 	            android:text="@string/end"
- 	            android:textColor="#000000" />
-
  	        <LinearLayout
+ 	            android:id="@+id/setting_left"
  	            android:layout_width="wrap_content"
  	            android:layout_height="wrap_content"
- 	            android:layout_gravity="top|center"
- 	            android:layout_marginTop="20dp"
- 	            android:orientation="horizontal" >
+ 	            android:layout_alignParentLeft="true"
+ 	            android:layout_centerVertical="true"
+ 	            android:orientation="vertical" >
 
- 	            <EditText
- 	                android:id="@+id/endHours"
+ 	            <Button
+ 	                android:id="@+id/vibration"
  	                android:layout_width="50dp"
- 	                android:layout_height="wrap_content"
- 	                android:background="@drawable/text_for_timer"
- 	                android:ems="10"
- 	                android:inputType="number"
- 	                android:maxLength="2"
- 	                android:textColor="#000000" >
- 	            </EditText>
+ 	                android:layout_height="50dp" />
 
- 	            <TextView
- 	                android:id="@+id/dotsEnd"
- 	                android:layout_width="wrap_content"
- 	                android:layout_height="wrap_content"
- 	                android:text="@string/dots"
- 	                android:textColor="#000000" />
-
- 	            <EditText
- 	                android:id="@+id/endMinute"
+ 	            <Button
+ 	                android:id="@+id/sound"
  	                android:layout_width="50dp"
- 	                android:layout_height="wrap_content"
- 	                android:background="@drawable/text_for_timer"
- 	                android:ems="10"
- 	                android:inputType="number"
- 	                android:maxLength="2"
- 	                android:textColor="#000000" />
+ 	                android:layout_height="50dp" />
+ 	            
+ 	            <Button android:id="@+id/setDate"
+ 	                android:layout_width="50dp"
+ 	                android:layout_height="50dp" />
  	        </LinearLayout>
 
- 	        <CheckBox
- 	            android:id="@+id/checkPeriodic"
- 	            android:layout_width="wrap_content"
- 	            android:layout_height="wrap_content"
- 	            android:layout_gravity="center_horizontal"
- 	            android:layout_marginTop="20dp"
- 	            android:button="@drawable/button_for_checkbox"
- 	            android:text="@string/checkBox"
- 	            android:textColor="#000000" />
-
- 	    </LinearLayout>
+ 	    </RelativeLayout>
 
  	</ScrollView>
  	

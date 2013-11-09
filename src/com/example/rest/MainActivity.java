@@ -1,15 +1,9 @@
 package com.example.rest;
 
-import java.util.Calendar;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.TimePickerDialog;
-import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,10 +13,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.CalendarContract.Colors;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -32,29 +24,24 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.Toast;
 
 
 
 @SuppressLint("NewApi")
-public class MainActivity extends Activity implements OnTouchListener,OnClickListener {
-
-	protected String LOG_TAG = "MyLog";
+public class MainActivity extends Activity implements OnClickListener {
+	
+	private static int START_TIME = 0;
+	private static int END_TIME = 2;
+	private static int PERIODIC_TIME = 4;
 	
 	private LinearLayout mContainerView;
 
@@ -62,8 +49,14 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	
 	private LinearLayout periodic;
 	
-	private Button installTimer;
-	private CheckBox editView ;
+	private boolean setSound = true, setVibration = true, setDate = true;
+	
+	public static Button installTimer;
+	private CheckBox editView;
+	
+	private Button sound;
+	private Button vibration;
+	private Button date;
 	
 	private Context context;
 	
@@ -72,11 +65,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 	private SharedPreferences sPref;
 	
 	private Animation anim;
-	
-	private int count = 0;
-	private static int START_TIME = 0;
-	private static int END_TIME = 2;
-	private static int PERIODIC_TIME = 4;
+
 	private boolean checkPeriodic = false;
 	private int check = 0;
 	private int setHour = 0;
@@ -94,6 +83,10 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		installTimer = (Button) findViewById(R.id.set);
 		
 		editView = (CheckBox) findViewById(R.id.checkPeriodic);
+		
+		sound = (Button) findViewById(R.id.sound);
+		vibration = (Button) findViewById(R.id.vibration);
+		date = (Button) findViewById(R.id.setDate);
 		
 		context = MainActivity.this;
 
@@ -124,6 +117,8 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		
 		installTimer.setOnClickListener(this);
 		editView.setOnClickListener(this);
+		sound.setOnClickListener(this);
+		vibration.setOnClickListener(this);
 		
 		for(int i=0; i<=5; i++) {
 			timer[i].setOnClickListener(this);
@@ -161,10 +156,6 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 				Intent Help = new Intent(MainActivity.this, Help.class);
 				startActivity(Help);
 				break;
-			case R.id.menu_setting:
-				Intent Setting = new Intent(MainActivity.this, SettingActivity.class);
-				startActivity(Setting);
-				break;
 		}
 	
 		return super.onOptionsItemSelected(item);
@@ -199,8 +190,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 							intTimer[i] = Integer.valueOf(stringTimer[i]);
 							if (i == 5 && intTimer[4] == 0 && intTimer[5] == 0) {
 								Toast.makeText(this, "должны быть время между отдыхом", Toast.LENGTH_LONG).show();
-								count = PERIODIC_TIME;
-								//showTimePickerDialog(periodicHour, periodicMinute);
+								showDialog(PERIODIC_TIME);
 								chekerTime = false;
 								break;
 							}
@@ -209,13 +199,15 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 					if (!chekerTime) {
 						return;
 					}
+					
 					installTimer.setText("Остановить таймер");
 					installTimer.setBackgroundResource(R.drawable.button_red_selector);
 					Context context = this.getApplicationContext();
+					alarm.setChecker(setSound, setVibration);
 					if(checkPeriodic){
-				    alarm.SetAlarm(context, intTimer[0], intTimer[1], intTimer[2], intTimer[3], intTimer[4], intTimer[5]);
+				    alarm.SetAlarm(context, intTimer[0], intTimer[1], intTimer[2], intTimer[3], intTimer[4], intTimer[5], setDate);
 					} else {
-						alarm.SetAlarm(context, intTimer[0], intTimer[1], intTimer[2], intTimer[3]);
+						alarm.SetAlarm(context, intTimer[0], intTimer[1], intTimer[2], intTimer[3], setDate);
 					}
 				    check =1;
 				    saveCheck();
@@ -230,9 +222,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 			    break;
 			case R.id.checkPeriodic:
 				if(!checkPeriodic) {
-					anim = AnimationUtils.loadAnimation(this,R.anim.appearance);
-					periodic.startAnimation(anim);
-					mContainerView.addView(periodic);
+					createPeriodic(true);
 					checkPeriodic = true;
 				}
 				else {
@@ -281,7 +271,30 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 			case 5:
 				showDialog(PERIODIC_TIME);
 				break;
+			case R.id.sound:
 				
+				if (!setSound) {
+					setSound = true;
+				} else {
+					setSound = false;
+				}
+				
+				break;
+			case R.id.vibration:
+				
+				if (!setVibration) {
+					setVibration = true;
+				} else {
+					setVibration = false;
+				}
+				break;
+			case R.id.setDate:
+				
+				if (!setDate) {
+					setDate = true;
+				} else {
+					setDate = false;
+				}
 		}
 	}
 	
@@ -293,12 +306,33 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		    	stringTimer[i] = timer[i].getText().toString();
 		    }
 		    String savedText = String.valueOf(check);
-		    for (int i=0;i<=5;i++) {
-		    	savedText += ",";
-		    	savedText += stringTimer[i];
+		    savedText += ",";
+		    if (setSound) {
+		    	savedText += "1";
+		    } else {
+		    	savedText += "0";
+		    }
+		    
+		    savedText += ",";
+		    if (setVibration) {
+		    	savedText += "1";
+		    } else {
+		    	savedText += "0";
 		    }
 		    savedText += ",";
 		    savedText += checkPeriodic;
+		    int length;
+		    if (checkPeriodic) {
+		    	length = 5;
+		    } else {
+		    	length = 3;
+		    }
+		    for (int i=0;i<=length;i++) {
+		    	savedText += ",";
+		    	savedText += stringTimer[i];
+		    }
+
+		    
 		    ed.putString(SAVED_TEXT, savedText);
 		    ed.commit();
 		  }
@@ -311,14 +345,35 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 		    } else {
 		    String[] avaliable = savedText.split(",");
 		    check = Integer.valueOf(avaliable[0]);
+		    if (Integer.parseInt(avaliable[1]) == 1) {
+		    	setSound = true;
+		    } else {
+		    	setSound = false;
+		    }
+		    
+		    if (Integer.parseInt(avaliable[2]) == 1) {
+		    	setVibration = true;
+		    } else {
+		    	setVibration = false;
+		    }
 		    if (check == 1) {
-			    checkPeriodic = Boolean.valueOf(avaliable[7]);
-		    	for (int i=1; i<=6; i++) {
-		    		timer[i-1].setText(avaliable[i]);
+			    checkPeriodic = Boolean.valueOf(avaliable[3]);
+			    if (checkPeriodic) {
+			    	createPeriodic(false);
+			    }
+			    int length;
+			    if (checkPeriodic) {
+			    	length = 10;
+			    } else {
+			    	length = 8;
+			    }
+		    	for (int i=4; i<=length; i++) {
+		    		timer[i-4].setText(avaliable[i]);
 		    	}
 		    	installTimer.setText("Остановить таймер");
 		    	installTimer.setBackgroundResource(R.drawable.button_red_selector);
 		    }
+		    
 		    }
 		    
 		  }
@@ -332,20 +387,6 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 				float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
 		        return px;
 		    }
-
-			@Override
-			public boolean onTouch(View arg0, MotionEvent arg1) {
-				// TODO Auto-generated method stub
-				
-				int action = arg1.getAction();
-				float x = arg1.getX();
-				float y = arg1.getY();
-				
-				Log.v("ON_TOUCH", "Action = " + action + "View:" + arg0.toString());
-				Log.v("ON_TOUCH", "X = "+x+" Y = "+y);
-				Toast.makeText(context, x+" "+y, Toast.LENGTH_SHORT).show();
-				return false;
-			}
 			
 			protected Dialog onCreateDialog(int id) {
 				int seterHours;
@@ -362,6 +403,15 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
 				}
 				CustomTimePickerDialog TimePicker = new CustomTimePickerDialog(context, timer[id], timer [id+1],seterHours, seterMinute);
 				return TimePicker;
+			}
+			
+			public void createPeriodic(boolean check) {
+				if (check) {
+					anim = AnimationUtils.loadAnimation(this,R.anim.appearance);
+					periodic.startAnimation(anim);
+				}
+				
+				mContainerView.addView(periodic);
 			}
 }
 

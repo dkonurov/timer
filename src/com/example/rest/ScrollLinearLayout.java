@@ -159,6 +159,8 @@ public class ScrollLinearLayout extends LinearLayout implements OnClickListener,
         if (circular) {
         	super.scrollBy(0, -HeightView/2);
         }
+        
+        scrollBy(0,time*HeightView);
 
         if (circular) {
         	maxScroll = (HeightView*maxTime/2+HeightView/2);
