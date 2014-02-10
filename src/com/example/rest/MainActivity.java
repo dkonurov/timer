@@ -27,10 +27,12 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,8 +83,13 @@ public class MainActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_main);
 		
 		installTimer = (Button) findViewById(R.id.set);
+
+        Spinner spinner = (Spinner) findViewById(R.id.checkPeriodic);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.number, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
 		
-		editView = (CheckBox) findViewById(R.id.checkPeriodic);
+//		editView = (CheckBox) findViewById(R.id.checkPeriodic);
 		
 		sound = (Button) findViewById(R.id.sound);
 		vibration = (Button) findViewById(R.id.vibration);
@@ -116,7 +123,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		mContainerView = (LinearLayout) findViewById(R.id.scrollContent);
 		
 		installTimer.setOnClickListener(this);
-		editView.setOnClickListener(this);
+		//editView.setOnClickListener(this);
 		sound.setOnClickListener(this);
 		vibration.setOnClickListener(this);
 		
