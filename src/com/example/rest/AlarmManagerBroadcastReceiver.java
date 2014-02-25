@@ -1,11 +1,11 @@
 package com.example.rest;
-import java.util.Calendar;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import java.util.Calendar;
  
 public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 	
@@ -171,6 +171,14 @@ public void SetAlarm(Context context, int startHours, int startMinute, int endHo
         endAm.set(AlarmManager.RTC_WAKEUP, calendarEnd.getTimeInMillis(), piEnd);
         
 	}
+
+    public void SetAlarm(Context context, int startHours, int startMinute, int endHours, int endMinute, int periodicHours, int periodicMinute) {
+        SetAlarm(context, startHours, startMinute, endHours, endMinute, periodicHours, periodicMinute, true);
+    }
+
+    public void SetAlarm(Context context, int startHours, int startMinute, int endHours, int endMinute) {
+        SetAlarm(context, startHours, startMinute, endHours, endMinute, true);
+    }
  
 	
 	/**

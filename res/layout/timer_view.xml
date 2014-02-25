@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    android:id="@+id/main_timer_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:animateLayoutChanges="true"
+        android:layout_weight="1" >
+
+        <RelativeLayout android:id="@+id/setHorizontalConteiner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/scrollContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:gravity="right"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/stringStart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/start"
+                    android:textColor="#000000" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/startHours"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/text_for_timer"
+                        android:ems="10"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:textColor="#000000" />
+
+                    <EditText
+                        android:id="@+id/startMinute"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/text_for_timer"
+                        android:ems="10"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:textColor="#000000" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/stringEnd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/end"
+                    android:textColor="#000000" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/endHours"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/text_for_timer"
+                        android:ems="10"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:textColor="#000000" />
+
+                    <EditText
+                        android:id="@+id/endMinute"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/text_for_timer"
+                        android:ems="10"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:textColor="#000000" />
+                </LinearLayout>
+
+                <Spinner
+                    android:id="@+id/checkPeriodic"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:spinnerMode="dropdown"
+                    android:layout_marginTop="20dp"
+                    android:textColor="#000000" />
+            </LinearLayout>
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/set"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/button_blue_selector"
+            android:singleLine="true"
+            android:text="@string/set" />
+
+    </LinearLayout>
+
+</LinearLayout>

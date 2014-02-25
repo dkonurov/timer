@@ -5,6 +5,6 @@
     style="@style/spinnerItemStyle"
     android:singleLine="true"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/dropdownListPreferredItemHeight"
+    android:layout_height="wrap_content"
     android:background="@drawable/text_for_timer"
     android:ellipsize="marquee" />
