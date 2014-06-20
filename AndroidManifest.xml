@@ -27,12 +27,6 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name="com.example.rest.MyReceiver"
-            android:enabled="true"
-            android:exported="true" >
-        </receiver>
-
         <service android:name="com.example.rest.TimerService" >
         </service>
 
@@ -40,10 +34,6 @@
             android:name=".activity.Help"
             android:label="@string/title_activity_help"
             android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="com.example.rest.SettingActivity"
-            android:label="@string/title_activity_setting" >
         </activity>
     </application>
 
