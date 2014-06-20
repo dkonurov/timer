@@ -9,10 +9,8 @@ import android.media.SoundPool;
 import android.media.SoundPool.OnLoadCompleteListener;
 import android.os.IBinder;
 import android.os.Vibrator;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
+
+import com.example.rest.activity.MainActivity;
 
 public class TimerService extends Service {
 	private boolean sound;

@@ -23,6 +23,7 @@
     <dimen name="linear_width_small">160dp</dimen>
     <dimen name="linear_height_small">80dp</dimen>
 
+    <dimen name="text_size_large">32sp</dimen>
     <dimen name="text_size_normal">30sp</dimen>
     <dimen name="text_size_small">12sp</dimen>
 

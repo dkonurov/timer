@@ -1,8 +1,10 @@
-package com.example.rest;
+package com.example.rest.activity;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+
+import com.example.rest.R;
 
 public class Help extends Activity {
 

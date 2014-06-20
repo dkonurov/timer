@@ -1,4 +1,4 @@
-package com.example.rest;
+package com.example.rest.elements;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -16,9 +16,11 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-/**
- * Created by dmitry on 16.02.14.
- */
+import com.example.rest.AlarmManagerBroadcastReceiver;
+import com.example.rest.CustomTimePickerDialog;
+import com.example.rest.R;
+
+
 public class TimerLayout extends RelativeLayout implements View.OnClickListener {
 
 

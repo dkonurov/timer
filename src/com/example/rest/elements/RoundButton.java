@@ -1,4 +1,4 @@
-package com.example.rest;
+package com.example.rest.elements;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -13,6 +13,10 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.ToggleButton;
 
+import com.example.rest.activity.MainActivity;
+import com.example.rest.R;
+import com.example.rest.Utils;
+
 public class RoundButton extends RelativeLayout {
 
     private final static int sSizeButton = 7;
@@ -26,9 +30,12 @@ public class RoundButton extends RelativeLayout {
     private int centerY;
     private FrameLayout.LayoutParams mainParams;
 
+    private Resources resources;
+
     public RoundButton(Context context) {
         super(context);
 
+        resources = context.getResources();
 
         Display display = Utils.activity.getWindowManager().getDefaultDisplay();
 
@@ -82,6 +89,8 @@ public class RoundButton extends RelativeLayout {
             correctNormalButtons(r, paramsButton, textSize);
         } else {
             paramsButton = MainActivity.utils.getDimension(R.dimen.button_params_large);
+            textSize = MainActivity.utils.getDimension(R.dimen.text_size_button_large);
+            correctNormalButtons(r, paramsButton, textSize);
         }
 
 
@@ -90,6 +99,7 @@ public class RoundButton extends RelativeLayout {
 
     public void correctSmallButtons(Resources r, int paramsButton, int textSize) {
         String week[] = r.getStringArray(R.array.week);
+        //noinspection ConstantConditions
         Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), getContext().getString(R.string.font));
         for (int i = 0; i < sSizeButton; i++) {
             LayoutParams buttonParams = new LayoutParams(paramsButton, paramsButton);
@@ -99,7 +109,9 @@ public class RoundButton extends RelativeLayout {
             buttonParams.topMargin = (int) y;
             buttonParams.leftMargin = (int) x - paramsButton / 3;
             if (i == 4) {
-                buttons[i].setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+                buttons[i].setGravity(Gravity.RIGHT | Gravity.BOTTOM);
+            } else if (i == 5 || i == 6 || i == 3) {
+                buttons[i].setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
             }
 
             buttons[i].setTextOff(week[i]);
@@ -115,6 +127,7 @@ public class RoundButton extends RelativeLayout {
 
     public void correctNormalButtons(Resources r, int paramsButton, int textSize) {
         String week[] = r.getStringArray(R.array.week);
+        //noinspection ConstantConditions
         Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), getContext().getString(R.string.font));
         for (int i = 0; i < sSizeButton; i++) {
             LayoutParams buttonParams = new LayoutParams(paramsButton, paramsButton);
@@ -124,7 +137,9 @@ public class RoundButton extends RelativeLayout {
             buttonParams.topMargin = (int) y - paramsButton / 4;
             buttonParams.leftMargin = (int) x - paramsButton / 3;
             if (i == 4) {
-                buttons[i].setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+                buttons[i].setGravity(Gravity.RIGHT | Gravity.BOTTOM);
+            } else if (i == 5 || i == 6 || i == 3) {
+                buttons[i].setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
             }
 
             buttons[i].setTextOff(week[i]);

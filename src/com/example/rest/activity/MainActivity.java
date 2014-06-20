@@ -1,8 +1,7 @@
-package com.example.rest;
+package com.example.rest.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
@@ -14,11 +13,16 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.rest.AlarmManagerBroadcastReceiver;
+import com.example.rest.R;
+import com.example.rest.Utils;
+import com.example.rest.adapters.CustomPagerAdapter;
+import com.example.rest.elements.AlarmLayout;
+import com.example.rest.elements.TimerLayout;
 
 
 @SuppressLint("NewApi")
@@ -32,24 +36,17 @@ public class MainActivity extends Activity {
 	private static int START_TIME = 0;
 	private static int END_TIME = 2;
 	private static int PERIODIC_TIME = 4;
-	
+
 	private LinearLayout mContainerView;
 
 	private EditText[] timer = new EditText[6];
-	
+
 	private LinearLayout periodic;
 	
 	private boolean setSound = true, setVibration = true, setDate = true;
 	
 	public static Button installTimer;
-	private CheckBox editView;
-	
-	private Button sound;
-	private Button vibration;
-	private Button date;
-	
-	private Context context;
-	
+
 	private AlarmManagerBroadcastReceiver alarm;
 	
 	private SharedPreferences sPref;
@@ -73,7 +70,9 @@ public class MainActivity extends Activity {
         utils = new Utils(this);
 
         pager = (ViewPager) findViewById(R.id.pager);
-        CustomPagerAdapter customPagerAdapter = new CustomPagerAdapter();
+        TimerLayout timerLayout = new TimerLayout(this);
+        AlarmLayout alarmLayout = new AlarmLayout(this, true);
+        CustomPagerAdapter customPagerAdapter = new CustomPagerAdapter(alarmLayout, timerLayout);
         pager.setAdapter(customPagerAdapter);
 
 		loadCheck();

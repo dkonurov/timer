@@ -3,6 +3,7 @@ package com.example.rest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
 /**
@@ -12,10 +13,13 @@ public class Utils {
 
     public static Context context;
     public static Activity activity;
+    public static TimerSharedPreferances timerSharedPreferances;
+    public static DisplayMetrics metrics = new DisplayMetrics();
 
     public Utils(Activity activity) {
-        this.context = activity.getApplicationContext();
-        this.activity = activity;
+        Utils.context = activity.getApplicationContext();
+        Utils.activity = activity;
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
     }
 
     /**
@@ -23,7 +27,7 @@ public class Utils {
      * @param id
      * @return int dimension
      */
-    public int getDimension(int id) {
+    public static int getDimension(int id) {
         Resources r = context.getResources();
         return (int) r.getDimension(id);
     }

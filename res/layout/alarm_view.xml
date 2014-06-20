@@ -2,7 +2,8 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/alarm_layout"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background">
 
@@ -39,7 +40,7 @@
                 android:textColor="@android:color/black"
                 android:layout_width="@dimen/width_edit_text_normal"
                 android:layout_height="@dimen/width_edit_text_normal"
-                android:textSize="@dimen/text_size_normal"
+                android:textSize="@dimen/text_size_large"
                 android:inputType="number"
                 android:maxLength="2"
                 android:fontFamily=""/>
