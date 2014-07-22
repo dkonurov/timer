@@ -43,7 +43,7 @@ public class RoundButton extends RelativeLayout {
             buttons[i] = new ToggleButton(context);
         }
 
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             height = display.getHeight();
             width = display.getWidth();
             buttons[0].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.monday_selector));

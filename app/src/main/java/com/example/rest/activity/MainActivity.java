@@ -71,7 +71,7 @@ public class MainActivity extends Activity {
 
         pager = (ViewPager) findViewById(R.id.pager);
         TimerLayout timerLayout = new TimerLayout(this);
-        AlarmLayout alarmLayout = new AlarmLayout(this, true);
+        AlarmLayout alarmLayout = new AlarmLayout(this);
         CustomPagerAdapter customPagerAdapter = new CustomPagerAdapter(alarmLayout, timerLayout);
         pager.setAdapter(customPagerAdapter);
 

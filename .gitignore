@@ -1,3 +1,10 @@
+/.idea/libraries/support_v4_18_0_0.xml
+/app/build/generated/source/r/debug/com/example/rest/R.java
+/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0-rc1/AndroidManifest.xml
+/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0-rc1/classes.jar
+/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0-rc1/libs/internal_impl-21.0.0-rc1.jar
+/app/build/intermediates/pre-dexed/debug/support-v4-18.0.0-93c505be894fa674b6bb87e8226d2513d30ef04b.jar
+/build/intermediates/dex-cache/cache.xml
 /gradle/wrapper/gradle-wrapper.jar
 /gradle/wrapper/gradle-wrapper.properties
 /gradlew

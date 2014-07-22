@@ -33,8 +33,7 @@
             android:layout_height="@dimen/width_edit_text_normal"
             android:textSize="@dimen/text_size_large"
             android:inputType="number"
-            android:maxLength="2"
-            android:fontFamily=""/>
+            android:maxLength="2"/>
     </RelativeLayout>
 
 </LinearLayout>
