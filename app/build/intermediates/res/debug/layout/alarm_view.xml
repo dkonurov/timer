@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/alarm_layout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:orientation="horizontal"
+        android:background="@drawable/edit_text_background"
+        android:gravity="center_vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/hour"
+                android:layout_centerInParent="true"
+                android:textColor="@android:color/black"
+                android:layout_width="wrap_content"
+                android:cursorVisible="false"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="2"/>
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <EditText
+                android:id="@+id/minute"
+                android:layout_centerInParent="true"
+                android:textColor="@android:color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:cursorVisible="false"
+                android:inputType="number"
+                android:maxLength="2"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <ToggleButton
+        android:id="@+id/music"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_bottom_large"
+        android:text=""
+        android:textOff=""
+        android:textOn=""
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/thursday_selector"/>
+
+    <ToggleButton
+        android:id="@+id/vibration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_bottom_vibration_large"
+        android:text=""
+        android:textOff=""
+        android:textOn=""
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/monday_selector"/>
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textOff=""
+        android:textOn=""
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/button_start_stop_selector"/>
+
+</RelativeLayout><!-- From: file:/home/dmitry/AndroidStudioProjects/timer/app/src/main/res/layout/alarm_view.xml -->

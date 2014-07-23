@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    style="@style/spinnerItemStyle"
+    android:singleLine="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/text_for_timer"
+    android:ellipsize="marquee" /><!-- From: file:/home/dmitry/AndroidStudioProjects/timer/app/src/main/res/layout/simple_spinner_item.xml -->
