@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:drawable="@drawable/timer_border" />
-
-</selector>
-<!-- From: file:/home/dmitry/AndroidStudioProjects/timer/app/src/main/res/drawable/text_for_timer.xml -->
