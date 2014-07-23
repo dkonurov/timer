@@ -15,8 +15,8 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 	
 	/**
 	 * set sound and vibration check
-	 * @param boolean _sound
-	 * @param boolean _vibration
+	 * @param _sound
+	 * @param _vibration
 	 */
 	public void setChecker (boolean _sound, boolean _vibration) {
 		sound = _sound;
@@ -26,13 +26,13 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 
 	/**
 	 * Set pereodic alarm
-	 * @param Context context
-	 * @param int startHours
-	 * @param int startMinute
-	 * @param int endHours
-	 * @param int endMinute
-	 * @param int periodicHours
-	 * @param int periodicMinute
+	 * @param context
+	 * @param startHours
+	 * @param startMinute
+	 * @param endHours
+	 * @param endMinute
+	 * @param periodicHours
+	 * @param periodicMinute
 	 */
 public void SetAlarm(Context context, int startHours, int startMinute, int endHours, int endMinute, int periodicHours, int periodicMinute, boolean setDate)
     {
@@ -104,11 +104,11 @@ public void SetAlarm(Context context, int startHours, int startMinute, int endHo
 
 	/**
 	 * set once alarm
-	 * @param Context context
-	 * @param int startHours
-	 * @param int startMinute
-	 * @param int endHours
-	 * @param int endMinute
+	 * @param context
+	 * @param startHours
+	 * @param startMinute
+	 * @param endHours
+	 * @param endMinute
 	 */
 	public void SetAlarm(Context context, int startHours, int startMinute, int endHours,int endMinute, boolean setDate) {
 		
@@ -183,7 +183,7 @@ public void SetAlarm(Context context, int startHours, int startMinute, int endHo
 	
 	/**
 	 * Cancel seted alarm
-	 * @param Context context
+	 * @param context
 	 */
     public void CancelAlarm(Context context)
     {

@@ -1,5 +1,6 @@
 package com.example.rest.elements;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -13,38 +14,37 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.ToggleButton;
 
-import com.example.rest.activity.MainActivity;
 import com.example.rest.R;
-import com.example.rest.Utils;
 
 public class RoundButton extends RelativeLayout {
 
     private final static int sSizeButton = 7;
-    
+
     private ToggleButton buttons[] = new ToggleButton[sSizeButton];
 
-    private int height;
-    private int width;
-    
     private int centerX;
     private int centerY;
-    private FrameLayout.LayoutParams mainParams;
 
-    private Resources resources;
+    public RoundButton(Activity activity) {
+        super(activity);
+        initUi(activity);
+    }
 
-    public RoundButton(Context context) {
-        super(context);
+    private void initUi(Activity activity) {
+        Context context = activity.getApplicationContext();
 
-        resources = context.getResources();
-
-        Display display = Utils.activity.getWindowManager().getDefaultDisplay();
+        Display display = activity.getWindowManager().getDefaultDisplay();
 
         for (int i = 0; i < sSizeButton; i++) {
             buttons[i] = new ToggleButton(context);
         }
 
+        int height;
+        int width;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            //noinspection deprecation
             height = display.getHeight();
+            //noinspection deprecation
             width = display.getWidth();
             buttons[0].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.monday_selector));
             buttons[1].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.tuesday_selector));
@@ -68,7 +68,7 @@ public class RoundButton extends RelativeLayout {
             buttons[6].setBackground(context.getResources().getDrawable(R.drawable.sunday_selector));
         }
 
-        mainParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams mainParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         setLayoutParams(mainParams);
 
         centerY = height / 2;
@@ -80,24 +80,21 @@ public class RoundButton extends RelativeLayout {
         int screenLayout = context.getResources().getConfiguration().screenLayout;
         screenLayout &= Configuration.SCREENLAYOUT_SIZE_MASK;
         if (screenLayout == Configuration.SCREENLAYOUT_SIZE_SMALL) {
-            paramsButton = MainActivity.utils.getDimension(R.dimen.button_params_small);
-            textSize = MainActivity.utils.getDimension(R.dimen.text_size_button_small);
+            paramsButton = (int) context.getResources().getDimension(R.dimen.button_params_small);
+            textSize = (int) context.getResources().getDimension(R.dimen.text_size_button_small);
             correctSmallButtons(r, paramsButton, textSize);
         } else if (screenLayout == Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-            paramsButton = MainActivity.utils.getDimension(R.dimen.button_params_normal);
-            textSize = MainActivity.utils.getDimension(R.dimen.text_size_button_normal);
+            paramsButton = (int) context.getResources().getDimension(R.dimen.button_params_normal);
+            textSize = (int) context.getResources().getDimension(R.dimen.text_size_button_normal);
             correctNormalButtons(r, paramsButton, textSize);
         } else {
-            paramsButton = MainActivity.utils.getDimension(R.dimen.button_params_large);
-            textSize = MainActivity.utils.getDimension(R.dimen.text_size_button_large);
+            paramsButton = (int) context.getResources().getDimension(R.dimen.button_params_large);
+            textSize = (int) context.getResources().getDimension(R.dimen.text_size_button_large);
             correctNormalButtons(r, paramsButton, textSize);
         }
-
-
-
     }
 
-    public void correctSmallButtons(Resources r, int paramsButton, int textSize) {
+    private void correctSmallButtons(Resources r, int paramsButton, int textSize) {
         String week[] = r.getStringArray(R.array.week);
         //noinspection ConstantConditions
         Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), getContext().getString(R.string.font));
@@ -125,7 +122,7 @@ public class RoundButton extends RelativeLayout {
         }
     }
 
-    public void correctNormalButtons(Resources r, int paramsButton, int textSize) {
+    private void correctNormalButtons(Resources r, int paramsButton, int textSize) {
         String week[] = r.getStringArray(R.array.week);
         //noinspection ConstantConditions
         Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), getContext().getString(R.string.font));

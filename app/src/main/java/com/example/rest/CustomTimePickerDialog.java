@@ -35,8 +35,6 @@ import android.widget.TextView;
 @SuppressLint("NewApi")
 public class CustomTimePickerDialog extends Dialog implements View.OnClickListener {
 
-	private Button setTime;
-
     private Context dialogContext;
 
     private Integer setHours;
@@ -69,7 +67,7 @@ public class CustomTimePickerDialog extends Dialog implements View.OnClickListen
         LinearLayout TimePicker = (LinearLayout) view.findViewById(R.id.custom_timepicker);
         TimePicker.addView(hourLayout);
         TimePicker.addView(minuteLayout);
-        setTime = (Button) view.findViewById(R.id.SetTime);
+        Button setTime = (Button) view.findViewById(R.id.SetTime);
         setTime.setOnClickListener(this);
         setContentView(view);
     }

@@ -1,36 +1,26 @@
 package com.example.rest.elements;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 
-import com.example.rest.AlarmModel;
 import com.example.rest.R;
-import com.example.rest.Utils;
-import com.example.rest.adapters.AlarmListAdapter;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 public class AlarmLayout extends FrameLayout {
 
-    public AlarmLayout(Context context) {
-        super(context);
+    public AlarmLayout(Activity activity) {
+        super(activity);
 
-        View.inflate(context, R.layout.alarm_view, this);
-        initUi();
+        View.inflate(activity, R.layout.alarm_view, this);
+        initUi(activity);
     }
 
 
     @SuppressWarnings("deprecation")
-    private void initUi() {
+    private void initUi(Activity activity) {
         EditText hour = (EditText) findViewById(R.id.hour);
         EditText minute = (EditText) findViewById(R.id.minute);
         //noinspection ConstantConditions
@@ -47,7 +37,7 @@ public class AlarmLayout extends FrameLayout {
             minute.setBackground(null);
         }
 
-        RoundButton buttons = new RoundButton(getContext());
+        RoundButton buttons = new RoundButton(activity);
 
         addView(buttons);
     }
