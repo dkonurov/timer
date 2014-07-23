@@ -79,50 +79,16 @@ public class RoundButton extends RelativeLayout {
         final int textSize;
         int screenLayout = context.getResources().getConfiguration().screenLayout;
         screenLayout &= Configuration.SCREENLAYOUT_SIZE_MASK;
-        if (screenLayout == Configuration.SCREENLAYOUT_SIZE_SMALL) {
-            paramsButton = (int) context.getResources().getDimension(R.dimen.button_params_small);
-            textSize = (int) context.getResources().getDimension(R.dimen.text_size_button_small);
-            correctSmallButtons(r, paramsButton, textSize);
-        } else if (screenLayout == Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+        if (screenLayout == Configuration.SCREENLAYOUT_SIZE_NORMAL) {
             paramsButton = (int) context.getResources().getDimension(R.dimen.button_params_normal);
-            textSize = (int) context.getResources().getDimension(R.dimen.text_size_button_normal);
-            correctNormalButtons(r, paramsButton, textSize);
+            correctNormalButtons(r, paramsButton);
         } else {
             paramsButton = (int) context.getResources().getDimension(R.dimen.button_params_large);
-            textSize = (int) context.getResources().getDimension(R.dimen.text_size_button_large);
-            correctNormalButtons(r, paramsButton, textSize);
+            correctNormalButtons(r, paramsButton);
         }
     }
 
-    private void correctSmallButtons(Resources r, int paramsButton, int textSize) {
-        String week[] = r.getStringArray(R.array.week);
-        //noinspection ConstantConditions
-        Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), getContext().getString(R.string.font));
-        for (int i = 0; i < sSizeButton; i++) {
-            LayoutParams buttonParams = new LayoutParams(paramsButton, paramsButton);
-            float degrees = (float) (-Math.PI * 3 / 5 + 2 * Math.PI / sSizeButton * i) * 11 / 14;
-            float x = (float) (centerX + (centerY - paramsButton * 0.3) * Math.cos(degrees));
-            float y = (float) (centerY + (centerY - paramsButton * 0.65) * Math.sin(degrees));
-            buttonParams.topMargin = (int) y;
-            buttonParams.leftMargin = (int) x - paramsButton / 3;
-            if (i == 4) {
-                buttons[i].setGravity(Gravity.RIGHT | Gravity.BOTTOM);
-            } else if (i == 5 || i == 6 || i == 3) {
-                buttons[i].setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
-            }
-
-            buttons[i].setTextOff(week[i]);
-            buttons[i].setTextOn(week[i]);
-            buttons[i].setText(week[i]);
-            buttons[i].setTextSize(textSize);
-            buttons[i].setLayoutParams(buttonParams);
-            buttons[i].setTypeface(typeface);
-            buttons[i].setTextColor(Color.BLACK);
-            addView(buttons[i]);
-        }
-    }
-
-    private void correctNormalButtons(Resources r, int paramsButton, int textSize) {
+    private void correctNormalButtons(Resources r, int paramsButton) {
         String week[] = r.getStringArray(R.array.week);
         //noinspection ConstantConditions
         Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), getContext().getString(R.string.font));
@@ -142,7 +108,6 @@ public class RoundButton extends RelativeLayout {
             buttons[i].setTextOff(week[i]);
             buttons[i].setTextOn(week[i]);
             buttons[i].setText(week[i]);
-            buttons[i].setTextSize(textSize);
             buttons[i].setLayoutParams(buttonParams);
             buttons[i].setTypeface(typeface);
             buttons[i].setTextColor(Color.BLACK);
