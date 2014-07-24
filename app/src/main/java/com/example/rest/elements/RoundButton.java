@@ -1,20 +1,19 @@
 package com.example.rest.elements;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.util.AttributeSet;
 import android.view.Display;
 import android.view.Gravity;
-import android.widget.FrameLayout;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.ToggleButton;
 
 import com.example.rest.R;
+import com.example.rest.Utils;
 
 public class RoundButton extends RelativeLayout {
 
@@ -25,15 +24,25 @@ public class RoundButton extends RelativeLayout {
     private int centerX;
     private int centerY;
 
-    public RoundButton(Activity activity) {
-        super(activity);
-        initUi(activity);
+
+    public RoundButton(Context context) {
+        super(context);
+        initUi(context);
     }
 
-    private void initUi(Activity activity) {
-        Context context = activity.getApplicationContext();
+    public RoundButton(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initUi(context);
+    }
 
-        Display display = activity.getWindowManager().getDefaultDisplay();
+    public RoundButton(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        initUi(context);
+    }
+
+    private void initUi(Context context) {
+
+        Display display = Utils.getInstance().getActivity().getWindowManager().getDefaultDisplay();
 
         for (int i = 0; i < sSizeButton; i++) {
             buttons[i] = new ToggleButton(context);
@@ -68,43 +77,29 @@ public class RoundButton extends RelativeLayout {
             buttons[6].setBackground(context.getResources().getDrawable(R.drawable.sunday_selector));
         }
 
-        FrameLayout.LayoutParams mainParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams mainParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT);
         setLayoutParams(mainParams);
 
         centerY = height / 2;
         centerX = width / 2;
 
-        Resources r = context.getResources();
-        final int paramsButton;
-        final int textSize;
-        int screenLayout = context.getResources().getConfiguration().screenLayout;
-        screenLayout &= Configuration.SCREENLAYOUT_SIZE_MASK;
-        if (screenLayout == Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-            paramsButton = (int) context.getResources().getDimension(R.dimen.button_params_normal);
-            correctNormalButtons(r, paramsButton);
-        } else {
-            paramsButton = (int) context.getResources().getDimension(R.dimen.button_params_large);
-            correctNormalButtons(r, paramsButton);
-        }
+        final int paramsButton = context.getResources().getDisplayMetrics().widthPixels / 3;
+        setButtonsAround(paramsButton);
     }
 
-    private void correctNormalButtons(Resources r, int paramsButton) {
-        String week[] = r.getStringArray(R.array.week);
+    private void setButtonsAround(int paramsButton) {
+        String week[] = getContext().getResources().getStringArray(R.array.week);
         //noinspection ConstantConditions
         Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), getContext().getString(R.string.font));
         for (int i = 0; i < sSizeButton; i++) {
-            LayoutParams buttonParams = new LayoutParams(paramsButton, paramsButton);
+            LayoutParams buttonParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             float degrees = (float) (-Math.PI * 3 / 5 + 2 * Math.PI / sSizeButton * i) * 11 / 14;
             float x = (float) (centerX + (centerY - paramsButton) * Math.cos(degrees));
             float y = (float) (centerY + (centerY - paramsButton * 1.2) * Math.sin(degrees));
-            buttonParams.topMargin = (int) y - paramsButton / 4;
+            buttonParams.topMargin = (int) ( y - paramsButton / 3.5);
             buttonParams.leftMargin = (int) x - paramsButton / 3;
-            if (i == 4) {
-                buttons[i].setGravity(Gravity.RIGHT | Gravity.BOTTOM);
-            } else if (i == 5 || i == 6 || i == 3) {
-                buttons[i].setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
-            }
-
+            buttons[i].setGravity(Gravity.CENTER);
             buttons[i].setTextOff(week[i]);
             buttons[i].setTextOn(week[i]);
             buttons[i].setText(week[i]);

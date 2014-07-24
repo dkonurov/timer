@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.rest.AlarmManagerBroadcastReceiver;
 import com.example.rest.R;
+import com.example.rest.Utils;
 import com.example.rest.adapters.CustomPagerAdapter;
 import com.example.rest.elements.AlarmLayout;
 import com.example.rest.elements.TimerLayout;
@@ -63,6 +64,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Utils.initInstance(this);
 
         pager = (ViewPager) findViewById(R.id.pager);
         TimerLayout timerLayout = new TimerLayout(this);
@@ -174,6 +177,12 @@ public class MainActivity extends Activity {
         }
 
         mContainerView.addView(periodic);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Utils.destroyInstance();
     }
 }
 
