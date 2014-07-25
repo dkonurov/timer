@@ -5,4 +5,8 @@
          screen margins) for sw600dp devices (e.g. 7" tablets) here.
     -->
 
+    <dimen name="top_margin_edit_text">140dp</dimen>
+    <dimen name="left_margin_edit_text">140dp</dimen>
+    <dimen name="width_layout_edit_text">300dp</dimen>
+    <dimen name="height_layout_edit_text">150dp</dimen>
 </resources>
