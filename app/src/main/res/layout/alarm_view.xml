@@ -62,7 +62,7 @@
         android:textOff=""
         android:textOn=""
         android:layout_alignParentBottom="true"
-        android:background="@drawable/thursday_selector"/>
+        android:background="@drawable/music_on"/>
 
     <ToggleButton
         android:id="@+id/vibration"
@@ -73,7 +73,7 @@
         android:textOff=""
         android:textOn=""
         android:layout_alignParentBottom="true"
-        android:background="@drawable/monday_selector"/>
+        android:background="@drawable/vibration_selector"/>
 
     <ToggleButton
         android:layout_width="wrap_content"
