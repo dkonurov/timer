@@ -1,26 +1,26 @@
 package com.example.rest.elements;
 
-import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.example.rest.R;
 
 public class AlarmLayout extends FrameLayout {
 
-    public AlarmLayout(Activity activity) {
-        super(activity);
-
-        View.inflate(activity, R.layout.alarm_view, this);
-        initUi(activity);
+    public AlarmLayout(Context context) {
+        super(context);
+        View.inflate(getContext(), R.layout.alarm_view, this);
+        initUi();
     }
 
 
     @SuppressWarnings("deprecation")
-    private void initUi(Activity activity) {
+    private void initUi() {
         EditText hour = (EditText) findViewById(R.id.hour);
         EditText minute = (EditText) findViewById(R.id.minute);
         //noinspection ConstantConditions
@@ -37,7 +37,9 @@ public class AlarmLayout extends FrameLayout {
             minute.setBackground(null);
         }
 
-        RoundButton buttons = new RoundButton(activity);
+        LinearLayout centerViewForButton = (LinearLayout) findViewById(R.id.edit_text_layout);
+
+        RoundButton buttons = new RoundButton(getContext(), centerViewForButton);
 
         addView(buttons);
     }

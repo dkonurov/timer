@@ -12,6 +12,7 @@
         android:contentDescription="@string/left_image" />
 
     <LinearLayout
+        android:id="@+id/edit_text_layout"
         android:layout_width="@dimen/width_layout_edit_text"
         android:layout_height="@dimen/height_layout_edit_text"
         android:layout_marginLeft="@dimen/left_margin_edit_text"
@@ -62,7 +63,7 @@
         android:textOff=""
         android:textOn=""
         android:layout_alignParentBottom="true"
-        android:background="@drawable/music_on"/>
+        android:background="@drawable/music_selector"/>
 
     <ToggleButton
         android:id="@+id/vibration"

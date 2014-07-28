@@ -1,23 +1,24 @@
 package com.example.rest.elements;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.util.AttributeSet;
-import android.view.Display;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.ToggleButton;
 
 import com.example.rest.R;
-import com.example.rest.Utils;
 
+@SuppressLint("ViewConstructor")
 public class RoundButton extends RelativeLayout {
 
     private final static int sSizeButton = 7;
+    private final View mCenterView;
 
     private ToggleButton buttons[] = new ToggleButton[sSizeButton];
 
@@ -25,67 +26,32 @@ public class RoundButton extends RelativeLayout {
     private int centerY;
 
 
-    public RoundButton(Context context) {
+    public RoundButton(Context context, View centerView) {
         super(context);
-        initUi(context);
-    }
-
-    public RoundButton(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initUi(context);
-    }
-
-    public RoundButton(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+        mCenterView = centerView;
         initUi(context);
     }
 
     private void initUi(Context context) {
 
-        Display display = Utils.getInstance().getActivity().getWindowManager().getDefaultDisplay();
-
         for (int i = 0; i < sSizeButton; i++) {
             buttons[i] = new ToggleButton(context);
         }
 
-        int height;
-        int width;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            //noinspection deprecation
-            height = display.getHeight();
-            //noinspection deprecation
-            width = display.getWidth();
-            buttons[0].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.monday_selector));
-            buttons[1].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.tuesday_selector));
-            buttons[2].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.wednesday_selector));
-            buttons[3].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.thursday_selector));
-            buttons[4].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.friday_selector));
-            buttons[5].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.saturday_selector));
-            buttons[6].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.sunday_selector));
-        } else {
-            Point point = new Point();
-            display.getSize(point);
-            height = point.y * 2 / 3;
-            width = point.x;
-
-            buttons[0].setBackground(context.getResources().getDrawable(R.drawable.monday_selector));
-            buttons[1].setBackground(context.getResources().getDrawable(R.drawable.tuesday_selector));
-            buttons[2].setBackground(context.getResources().getDrawable(R.drawable.wednesday_selector));
-            buttons[3].setBackground(context.getResources().getDrawable(R.drawable.thursday_selector));
-            buttons[4].setBackground(context.getResources().getDrawable(R.drawable.friday_selector));
-            buttons[5].setBackground(context.getResources().getDrawable(R.drawable.saturday_selector));
-            buttons[6].setBackground(context.getResources().getDrawable(R.drawable.sunday_selector));
-        }
+        setButtonBackground(context);
 
         RelativeLayout.LayoutParams mainParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT);
         setLayoutParams(mainParams);
 
-        centerY = height / 2;
-        centerX = width / 2;
+        if (mCenterView != null) {
+            mCenterView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+            centerY = (int) (getResources().getDimension(R.dimen.top_margin_edit_text) + (mCenterView.getMeasuredHeight() / 3));
+            centerX = (int) (getResources().getDimension(R.dimen.left_margin_edit_text) + (mCenterView.getMeasuredWidth() / 3));
 
-        final int paramsButton = context.getResources().getDisplayMetrics().widthPixels / 3;
-        setButtonsAround(paramsButton);
+            final int paramsButton = context.getResources().getDisplayMetrics().widthPixels / 6;
+            setButtonsAround(paramsButton);
+        }
     }
 
     private void setButtonsAround(int paramsButton) {
@@ -93,12 +59,12 @@ public class RoundButton extends RelativeLayout {
         //noinspection ConstantConditions
         Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), getContext().getString(R.string.font));
         for (int i = 0; i < sSizeButton; i++) {
-            LayoutParams buttonParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            float degrees = (float) (-Math.PI * 3 / 5 + 2 * Math.PI / sSizeButton * i) * 11 / 14;
-            float x = (float) (centerX + (centerY - paramsButton) * Math.cos(degrees));
-            float y = (float) (centerY + (centerY - paramsButton * 1.2) * Math.sin(degrees));
-            buttonParams.topMargin = (int) ( y - paramsButton / 3.5);
-            buttonParams.leftMargin = (int) x - paramsButton / 3;
+            LayoutParams buttonParams = new LayoutParams(paramsButton, paramsButton);
+            float degrees = (float) (-Math.PI * 3 / 5 + 2 * Math.PI / sSizeButton * i) * 10 / 14;
+            float x = (float) (centerX + ((paramsButton + paramsButton) * Math.cos(degrees)));
+            float y = (float) (centerY + ((paramsButton + paramsButton / 2) * Math.sin(degrees)));
+            buttonParams.topMargin = (int) y;
+            buttonParams.leftMargin = (int) x;
             buttons[i].setGravity(Gravity.CENTER);
             buttons[i].setTextOff(week[i]);
             buttons[i].setTextOn(week[i]);
@@ -107,6 +73,26 @@ public class RoundButton extends RelativeLayout {
             buttons[i].setTypeface(typeface);
             buttons[i].setTextColor(Color.BLACK);
             addView(buttons[i]);
+        }
+    }
+
+    private void setButtonBackground(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            buttons[0].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.monday_selector));
+            buttons[1].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.tuesday_selector));
+            buttons[2].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.wednesday_selector));
+            buttons[3].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.thursday_selector));
+            buttons[4].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.friday_selector));
+            buttons[5].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.saturday_selector));
+            buttons[6].setBackgroundDrawable(context.getResources().getDrawable(R.drawable.sunday_selector));
+        } else {
+            buttons[0].setBackground(context.getResources().getDrawable(R.drawable.monday_selector));
+            buttons[1].setBackground(context.getResources().getDrawable(R.drawable.tuesday_selector));
+            buttons[2].setBackground(context.getResources().getDrawable(R.drawable.wednesday_selector));
+            buttons[3].setBackground(context.getResources().getDrawable(R.drawable.thursday_selector));
+            buttons[4].setBackground(context.getResources().getDrawable(R.drawable.friday_selector));
+            buttons[5].setBackground(context.getResources().getDrawable(R.drawable.saturday_selector));
+            buttons[6].setBackground(context.getResources().getDrawable(R.drawable.sunday_selector));
         }
     }
 }
