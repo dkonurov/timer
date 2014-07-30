@@ -47,7 +47,7 @@ public class RoundButton extends RelativeLayout {
         if (mCenterView != null) {
             mCenterView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
             centerY = (int) (getResources().getDimension(R.dimen.top_margin_edit_text) + (mCenterView.getMeasuredHeight() / 3));
-            centerX = (int) (getResources().getDimension(R.dimen.left_margin_edit_text) + (mCenterView.getMeasuredWidth() / 3));
+            centerX = (int) (getResources().getDimension(R.dimen.left_margin_edit_text) + (mCenterView.getMeasuredWidth() / 2.4));
 
             final int paramsButton = context.getResources().getDisplayMetrics().widthPixels / 6;
             setButtonsAround(paramsButton);
@@ -60,9 +60,9 @@ public class RoundButton extends RelativeLayout {
         Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), getContext().getString(R.string.font));
         for (int i = 0; i < sSizeButton; i++) {
             LayoutParams buttonParams = new LayoutParams(paramsButton, paramsButton);
-            float degrees = (float) (-Math.PI * 3 / 5 + 2 * Math.PI / sSizeButton * i) * 10 / 14;
+            float degrees = (float) (-Math.PI * 3 / 5 + 2 * Math.PI / sSizeButton * i) * 9 / 12;
             float x = (float) (centerX + ((paramsButton + paramsButton) * Math.cos(degrees)));
-            float y = (float) (centerY + ((paramsButton + paramsButton / 2) * Math.sin(degrees)));
+            float y = (float) (centerY + ((paramsButton + paramsButton / 1.7) * Math.sin(degrees)));
             buttonParams.topMargin = (int) y;
             buttonParams.leftMargin = (int) x;
             buttons[i].setGravity(Gravity.CENTER);
