@@ -131,7 +131,7 @@ public class TimerLayout extends RelativeLayout implements View.OnClickListener 
                     installTimer.setBackgroundResource(R.drawable.button_red_selector);
                     Context context = getContext();
 //                  alarm.setChecker(setSound, setVibration);
-                    alarm.SetAlarm(context, intTimer[0], intTimer[1], intTimer[2], intTimer[3]);
+//                    alarm.SetAlarm(context, intTimer[0], intTimer[1], intTimer[2], intTimer[3]);
                     check =1;
 //                    saveCheck();
                 } else {

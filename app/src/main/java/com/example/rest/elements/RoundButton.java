@@ -5,22 +5,20 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.ToggleButton;
 
 import com.example.rest.R;
+import com.example.rest.model.Alarm;
 
 @SuppressLint("ViewConstructor")
 public class RoundButton extends RelativeLayout {
 
-    private final static int sSizeButton = 7;
     private final View mCenterView;
 
-    private ToggleButton buttons[] = new ToggleButton[sSizeButton];
+    private ToggleButton buttons[] = new ToggleButton[Alarm.sSizeButton];
 
     private int centerX;
     private int centerY;
@@ -34,7 +32,7 @@ public class RoundButton extends RelativeLayout {
 
     private void initUi(Context context) {
 
-        for (int i = 0; i < sSizeButton; i++) {
+        for (int i = 0; i < Alarm.sSizeButton; i++) {
             buttons[i] = new ToggleButton(context);
         }
 
@@ -58,9 +56,9 @@ public class RoundButton extends RelativeLayout {
         String week[] = getContext().getResources().getStringArray(R.array.week);
         //noinspection ConstantConditions
         Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), getContext().getString(R.string.font));
-        for (int i = 0; i < sSizeButton; i++) {
+        for (int i = 0; i < Alarm.sSizeButton; i++) {
             LayoutParams buttonParams = new LayoutParams(paramsButton, paramsButton);
-            float degrees = (float) (-Math.PI * 3 / 5 + 2 * Math.PI / sSizeButton * i) * 9 / 12;
+            float degrees = (float) (-Math.PI * 3 / 5 + 2 * Math.PI / Alarm.sSizeButton * i) * 9 / 12;
             float x = (float) (centerX + ((paramsButton + paramsButton) * Math.cos(degrees)));
             float y = (float) (centerY + ((paramsButton + paramsButton / 1.7) * Math.sin(degrees)));
             buttonParams.topMargin = (int) y;
@@ -94,5 +92,13 @@ public class RoundButton extends RelativeLayout {
             buttons[5].setBackground(context.getResources().getDrawable(R.drawable.saturday_selector));
             buttons[6].setBackground(context.getResources().getDrawable(R.drawable.sunday_selector));
         }
+    }
+
+    public Boolean[] getWeekBoolean() {
+        Boolean[] weekBoolean = new Boolean[Alarm.sSizeButton];
+        for (int i = 0; i < Alarm.sSizeButton; i++) {
+            weekBoolean[i] = buttons[i].isChecked();
+        }
+        return weekBoolean;
     }
 }
